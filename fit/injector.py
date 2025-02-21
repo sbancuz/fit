@@ -24,9 +24,13 @@ class Injector:
     ## TODO: Overload the [] operator to access memory
     ## TODO: Overload [start ... end] to access memory range
     ## TODO: Overload ['variable'] to access memory
+    ## TODO: Overload | to write to memory
+    ## TODO: Overload the other operators to error out
     memory: dict[int, int] = {}
 
     ## TODO: Overload the . operator to access registers
+    ## TODO: Overload | to write to memory
+    ## TODO: Overload the other operators to error out
     regs: dict[str, int] = {}
     
     def run(self) -> None:
