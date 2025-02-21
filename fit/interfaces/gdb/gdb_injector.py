@@ -1,4 +1,4 @@
-from fit.interfaces.injector import InternalInjector
+from fit.interfaces.internal_injector import InternalInjector
 from fit.interfaces.gdb.controller import GdbController, gdb_response
 
 from typing import Callable
