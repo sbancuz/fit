@@ -2,20 +2,6 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Callable, Type, Self
 
-import enum
-
-from fit.interfaces.gdb.gdb_injector import GDBIjector
-
-class Implementation(enum.Enum):
-    GDB = 1
-
-    @classmethod
-    def from_string(cls, s: str) -> Type['InternalInjector']:
-        if s.lower() == 'gdb':
-            return GDBIjector.get_class()
-        else:
-            raise ValueError(f'Unknown implementation: {s}')
-
 class InternalInjector(ABC):
 
     @classmethod
@@ -35,7 +21,7 @@ class InternalInjector(ABC):
         """Set a handler for an event."""
 
     @abstractmethod
-    def read_memory(self: InternalInjector, address: int) -> int:
+    def read_memory(self: InternalInjector, address: int, word_size: int) -> int:
         """Access memory at a given address."""
 
     @abstractmethod
@@ -50,3 +36,14 @@ class InternalInjector(ABC):
     def write_register(self: InternalInjector, register: str, value: int) -> None:
         """Write a value to a register."""
 
+    @abstractmethod
+    def close(self: InternalInjector) -> None:
+        """Close the injector."""
+
+    @abstractmethod
+    def run(self: InternalInjector) -> str:
+        """Run the injector for a given amount of time."""
+
+    @abstractmethod
+    def get_register_names(self: InternalInjector) -> list[str]:
+        ...
