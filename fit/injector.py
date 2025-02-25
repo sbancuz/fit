@@ -188,11 +188,11 @@ class Injector:
 
     def run(self, delay: timedelta | None = None, inject_func: Callable | None = None) -> str:
         if delay is None or inject_func is None:
-            return self.__internal_injector.finish()
+            return self.__internal_injector.run(blocking=True)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
 
-            event = self.__internal_injector.run()
+            event = self.__internal_injector.run(blocking=False)
 
             """
             This means that the event was triggered before the injection could take place.
@@ -207,7 +207,7 @@ class Injector:
 
             inject_func(self)
 
-            proc = executor.submit(self.__internal_injector.finish)
+            proc = executor.submit(self.__internal_injector.run, blocking=True)
 
             try:
                 if self.timeout is None:

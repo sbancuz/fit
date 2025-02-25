@@ -41,7 +41,7 @@ class InternalInjector(ABC):
         """Close the injector."""
 
     @abstractmethod
-    def run(self: InternalInjector) -> str:
+    def run(self: InternalInjector, blocking: bool = True) -> str:
         """Run the injector for a given amount of time."""
 
     @abstractmethod
@@ -55,7 +55,3 @@ class InternalInjector(ABC):
     @abstractmethod
     def interrupt(self: InternalInjector) -> None:
         ...
-
-    @abstractmethod
-    def finish(self: InternalInjector) -> str:
-        """Run the injector for a given amount of time."""
