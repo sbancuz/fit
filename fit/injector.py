@@ -1,8 +1,8 @@
 from typing import Callable, overload, Sequence
 from datetime import timedelta
 
-import lief
 import concurrent.futures
+import time
 
 from fit.elf import ELF
 from fit.interfaces.internal_injector import InternalInjector
@@ -12,7 +12,7 @@ class Memory:
 
     class IntList(list[int]):
         """
-        This class has to be used as an intermediary to allow |= like ope rations on lists of integers.
+        This class has to be used as an intermediary to allow |= like operations on lists of integers.
         They are defined as element-wise operations.
         """
         def __or__(self, other: int) -> list[int]:
@@ -177,15 +177,42 @@ class Injector:
         self.__internal_injector.set_event(event, callback, **kwargs)
 
         self.events[event] = callback
-    
+
+    @overload
     def run(self) -> str:
+        ...
+
+    @overload
+    def run(self, delay: timedelta, inject_func: Callable) -> str:
+        ...
+
+    def run(self, delay: timedelta | None = None, inject_func: Callable | None = None) -> str:
+        if delay is None or inject_func is None:
+            return self.__internal_injector.run()
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(self.__internal_injector.run)
+
+            event = self.__internal_injector.run()
+
+            """
+            This means that the event was triggered before the injection could take place.
+            TODO: Maybe we should return the event instead of 'unknown'? Should this be an error?
+            """
+            if event != 'unknown':
+                return event
+
+            time.sleep(delay.total_seconds())
+            self.__internal_injector.interrupt()
+
+            inject_func(self)
+
+            proc = executor.submit(self.__internal_injector.run)
+
             try:
                 if self.timeout is None:
-                    return future.result()
+                    return proc.result()
                 
-                return future.result(timeout=self.timeout.total_seconds())
+                return proc.result(timeout=self.timeout.total_seconds())
             except concurrent.futures.TimeoutError:
                 return 'Timeout'
 

@@ -47,3 +47,11 @@ class InternalInjector(ABC):
     @abstractmethod
     def get_register_names(self: InternalInjector) -> list[str]:
         ...
+
+    @abstractmethod
+    def is_running(self: InternalInjector) -> bool:
+        ...
+
+    @abstractmethod
+    def interrupt(self: InternalInjector) -> None:
+        ...

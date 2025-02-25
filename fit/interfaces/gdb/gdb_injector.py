@@ -9,12 +9,18 @@ def get_int(s: str, byteorder: Literal['little', 'big']) -> int:
     b = bytes.fromhex(s)
     return int.from_bytes(b, byteorder=byteorder)
 
-def to_gdb_hex(i: int) -> str:
+def to_gdb_hex(i: int, byteorder: Literal['little', 'big']) -> str:
     s = hex(i).replace('0x', '')
+    
+    # Ensure even length (pairs of hex digits)
     if len(s) % 2 != 0:
         s = '0' + s
 
-    return s
+    byte_array = bytes.fromhex(s)
+    if byteorder == 'little':
+        byte_array = byte_array[::-1]
+
+    return ''.join(f'{b:02x}' for b in byte_array)
 
 class GDBIjector(InternalInjector):
 
@@ -38,6 +44,7 @@ class GDBIjector(InternalInjector):
 
         kwargs: dict
 
+
         def __init__(self, id: int, address: int, name: str, callback: Callable, **kwargs) -> None:
             self.id = id
             self.address = address
@@ -45,7 +52,11 @@ class GDBIjector(InternalInjector):
             self.callback = callback
             self.kwargs = kwargs
 
+    running: bool = False
+
     breakpoints: list[Breakpoint] = []
+
+    stopped: bool = False
 
     def __init__(self, elf_path: str, **kwargs) -> None:
 
@@ -59,6 +70,8 @@ class GDBIjector(InternalInjector):
                 elf_path
             ],
         )
+
+        self.controller.write('-gdb-set target-async on')
 
         if 'remote' in kwargs:
             self.remote(address=kwargs['remote'])
@@ -76,10 +89,10 @@ class GDBIjector(InternalInjector):
         if self.embeded:
             self.controller.write('-interpreter-exec console "monitor reset halt"')
         else:
-            self.controller.write('-interpreter-exec console "monitor reset"')
+            self.controller.write('-interpreter-exec console "start"')
 
     def is_running(self) -> bool:
-        return True
+        return self.running
 
     def remote(self, address: str) -> gdb_response:
         assert ':' in address, 'Remote address must be in the format "host:port"'
@@ -87,7 +100,7 @@ class GDBIjector(InternalInjector):
 
         assert self.controller, 'GDB controller not initialized'
         
-        return self.controller.write(f'-target-select remote {address}')
+        return self.controller.write(f'-target-select extended-remote {address}')
 
     def set_event(self, event: str, callback: Callable, **kwargs) -> None:
         """Set a handler for an event."""
@@ -96,19 +109,21 @@ class GDBIjector(InternalInjector):
         bp = self.controller.write(f'-break-insert {event}')
 
         assert bp[0]['message'] == 'done', 'Error setting event'
+        assert not self.is_running()
 
         self.breakpoints.append(self.Breakpoint(
-                id=bp[0]['payload']['bkpt']['number'],
-                address=bp[0]['payload']['bkpt']['addr'],
-                name=event,
-                callback=callback,
-                kwargs=kwargs,
+            id=int(bp[0]['payload']['bkpt']['number']),
+            address=bp[0]['payload']['bkpt']['addr'], ## TODO: actually parse this
+            name=event,
+            callback=callback,
+            kwargs=kwargs,
         ))
 
     def read_memory(self, address: int, word_size: int) -> int:
         """Access memory at a given address."""
 
         assert self.controller, 'GDB controller not initialized'
+        assert not self.is_running()
 
         r = self.controller.write(f'-data-read-memory-bytes {hex(address)} {word_size}')[0]
         if r['message'] != 'done' or r['type'] != 'result':
@@ -120,13 +135,16 @@ class GDBIjector(InternalInjector):
         """Write a value to memory at a given address."""
 
         assert self.controller, 'GDB controller not initialized'
+        assert not self.is_running()
 
-        self.controller.write(f'-data-write-memory-bytes {hex(address)} {to_gdb_hex(value)}')
+        self.controller.write(f'-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, 'little')}')
 
     def read_register(self, register: str) -> int:
         """Read the value of a register."""
 
         assert self.controller, 'GDB controller not initialized'
+        ## TODO: Test if this is true on the board
+        assert not self.is_running() and self.stopped, 'Cannot read registers after process has stopped'
 
         r = self.controller.write(f'-data-list-register-values d')[0]
 
@@ -142,40 +160,54 @@ class GDBIjector(InternalInjector):
         """Write a value to a register."""
 
         assert self.controller, 'GDB controller not initialized'
+        ## TODO: Test if this is true on the board
+        assert not self.is_running() and self.stopped, 'Cannot write registers after process has stopped'
 
-        self.controller.write(f'-gdb-set ${register}={to_gdb_hex(value)}')
+        self.controller.write(f'-gdb-set ${register}={to_gdb_hex(value, 'little')}')
 
     def close(self) -> None:
         """Close the injector."""
-        # self.controller.write('-target-disconnect')
+        assert not self.is_running()
+
         self.controller.write('-target-kill')
 
     def run(self) -> str:
         """Run the injector for a given amount of time."""
 
         assert self.controller, 'GDB controller not initialized'
-        bp = self.controller.write('-exec-continue')
+        assert not self.is_running()
 
-        for msg in bp:
-            if msg['message'] != 'stopped':
-                continue
+        self.running = True
+        while self.running:
+            bp = self.controller.write('-exec-continue')
 
-            for b in self.breakpoints:
-                # print(f'Breakpoint: {b.id}')
-                # print(f'Address: {int(msg["payload"]["bkptno"])}')
-                # print(f'Condition: {int(b.id) == int(msg["payload"]["bkptno"])} : {b.id} == {int(msg["payload"]["bkptno"])}')
+            for msg in bp:
+                if msg['message'] != 'stopped':
+                    continue
 
-                ## b.id is already an int so I have not fking idea why I'm casting it to int
-                ## but if I don't do it, it doesn't work. I'm not sure why it doesn't work
-                ## but I'm not going to spend more time on this.
-                ##
-                ## -- GitHub Copilot
-                if int(b.id) == int(msg['payload']['bkptno']):
-                    b.callback(*b.kwargs)
-                    return b.name
+                if 'reason' in msg['payload'] and msg['payload']['reason'] == 'exited-normally':
+                    self.stopped = True
+                    self.running = False
 
+                    return 'unknown'
+
+                for b in self.breakpoints:
+                    if b.id == int(msg['payload']['bkptno']):
+                        self.stopped = True
+                        self.running = False
+
+                        b.callback(*b.kwargs)
+                        return b.name
+
+        self.stopped = True
+        self.running = False
+        
         return 'unknown'
 
     def get_register_names(self) -> list[str]:
         return self.register_names
+
+    def interrupt(self) -> None:
+        self.controller.write('-exec-interrupt --all')
+        self.running = False
 
