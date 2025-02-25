@@ -30,7 +30,7 @@ if __name__ == "__main__":
       Setup procedure
       """
       inj.reset()
-      inj.set_timeout(timedelta(seconds=1))
+      inj.set_timeout(timedelta(seconds=5))
       inj.set_result_condition('foo', lambda _ : print('hit a breakpoint, this result is also provided as the return value of inj.run()'))
 
       # print(inj.memory[0x20000000:0x20000004]) ## This works, it just doesn't point to valid memory so it's commented
@@ -45,7 +45,7 @@ if __name__ == "__main__":
       def foo(inj: Injector) -> None:
          print(inj.memory['i'])
          inj.memory['i'] = 0x1234
-         # print(inj.regs['rax'])
+         print(inj.regs['rax'])
 
       print(inj.run(
          delay=timedelta(seconds=1),

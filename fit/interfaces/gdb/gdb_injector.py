@@ -178,9 +178,35 @@ class GDBIjector(InternalInjector):
         assert not self.is_running()
 
         self.running = True
-        while self.running:
-            bp = self.controller.write('-exec-continue')
+        bp = self.controller.write('-exec-continue')
 
+        for msg in bp:
+            if msg['message'] != 'stopped':
+                continue
+
+            for b in self.breakpoints:
+                if b.id == int(msg['payload']['bkptno']):
+                    self.stopped = True
+                    self.running = False
+
+                    b.callback(*b.kwargs)
+                    return b.name
+
+        self.stopped = True
+        self.running = False
+        
+        return 'unknown'
+
+    def finish(self) -> str:
+        """Run the injector for a given amount of time."""
+
+        assert self.controller, 'GDB controller not initialized'
+        assert not self.is_running()
+
+        self.running = True
+        bp = self.controller.write('-exec-continue')
+
+        while self.running:
             for msg in bp:
                 if msg['message'] != 'stopped':
                     continue
@@ -189,7 +215,7 @@ class GDBIjector(InternalInjector):
                     self.stopped = True
                     self.running = False
 
-                    return 'unknown'
+                    return 'exit'
 
                 for b in self.breakpoints:
                     if b.id == int(msg['payload']['bkptno']):
@@ -199,9 +225,13 @@ class GDBIjector(InternalInjector):
                         b.callback(*b.kwargs)
                         return b.name
 
+            bp = self.controller.wait_response()
+
+        ## Here it should be an error
+        print("ERROR")
         self.stopped = True
         self.running = False
-        
+
         return 'unknown'
 
     def get_register_names(self) -> list[str]:

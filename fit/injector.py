@@ -188,7 +188,7 @@ class Injector:
 
     def run(self, delay: timedelta | None = None, inject_func: Callable | None = None) -> str:
         if delay is None or inject_func is None:
-            return self.__internal_injector.run()
+            return self.__internal_injector.finish()
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
 
@@ -199,6 +199,7 @@ class Injector:
             TODO: Maybe we should return the event instead of 'unknown'? Should this be an error?
             """
             if event != 'unknown':
+                print('Event triggered before injection')
                 return event
 
             time.sleep(delay.total_seconds())
@@ -206,7 +207,7 @@ class Injector:
 
             inject_func(self)
 
-            proc = executor.submit(self.__internal_injector.run)
+            proc = executor.submit(self.__internal_injector.finish)
 
             try:
                 if self.timeout is None:

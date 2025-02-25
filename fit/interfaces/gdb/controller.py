@@ -25,7 +25,7 @@ class GDBController:
         return r
 
     def wait_response(self) -> gdb_response:
-        r = self.controller.get_gdb_response()
+        r = self.controller.get_gdb_response(raise_error_on_timeout=False)
         # pprint(f'<-- {r}')
         # logger.debug(f'<-- {r}')
         return r
