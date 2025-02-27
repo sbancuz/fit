@@ -148,8 +148,6 @@ class Injector:
 
     __internal_injector: InternalInjector
 
-    timeout: timedelta | None = None
-
     events: dict[str, Callable] = {}
 
     binary: ELF 
@@ -170,9 +168,6 @@ class Injector:
     def reset(self) -> None:
         self.__internal_injector.reset()
 
-    def set_timeout(self, timeout: timedelta) -> None:
-        self.timeout = timeout
-
     def set_result_condition(self, event: str, callback: Callable, **kwargs) -> None:
         self.__internal_injector.set_event(event, callback, **kwargs)
 
@@ -183,11 +178,11 @@ class Injector:
         ...
 
     @overload
-    def run(self, delay: timedelta, inject_func: Callable) -> str:
+    def run(self, timeout: timedelta, injection_delay: timedelta, inject_func: Callable) -> str:
         ...
 
-    def run(self, delay: timedelta | None = None, inject_func: Callable | None = None) -> str:
-        if delay is None or inject_func is None:
+    def run(self, timeout: timedelta | None = None, injection_delay: timedelta | None = None, inject_func: Callable | None = None) -> str:
+        if injection_delay is None or inject_func is None:
             return self.__internal_injector.run(blocking=True)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -202,7 +197,7 @@ class Injector:
                 print('Event triggered before injection')
                 return event
 
-            time.sleep(delay.total_seconds())
+            time.sleep(injection_delay.total_seconds())
             self.__internal_injector.interrupt()
 
             inject_func(self)
@@ -210,10 +205,10 @@ class Injector:
             proc = executor.submit(self.__internal_injector.run, blocking=True)
 
             try:
-                if self.timeout is None:
+                if timeout is None:
                     return proc.result()
                 
-                return proc.result(timeout=self.timeout.total_seconds())
+                return proc.result(timeout=timeout.total_seconds())
             except concurrent.futures.TimeoutError:
                 return 'Timeout'
 
