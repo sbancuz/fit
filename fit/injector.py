@@ -1,4 +1,4 @@
-from typing import Callable, overload, Sequence
+from typing import Callable, overload, Any
 from datetime import timedelta
 
 import concurrent.futures
@@ -9,45 +9,45 @@ from fit.interfaces.internal_injector import InternalInjector
 from fit.interfaces.implementations import Implementation
 from fit.memory import Memory
 
-class Registers:
 
+class Registers:
     __internal_injector: InternalInjector
 
     elf: ELF
 
     registers: list[str]
-        
+
     def __init__(self, injector: InternalInjector, bin: ELF) -> None:
         self.__internal_injector = injector
         self.elf = bin
 
         self.registers = self.__internal_injector.get_register_names()
-        
+
     def __getitem__(self, name: str) -> int:
         if name.lower() not in self.registers:
             raise ValueError(f"Register {name} not found")
 
         return self.__internal_injector.read_register(name)
-        
+
     def __setitem__(self, name: str, value: int) -> None:
         if name not in self.registers:
             raise ValueError(f"Register {name} not found")
 
         self.__internal_injector.write_register(name, value)
 
-class Injector:
 
+class Injector:
     __internal_injector: InternalInjector
 
-    events: dict[str, Callable] = {}
+    events: dict[str, Callable[..., Any]] = {}
 
-    binary: ELF 
+    binary: ELF
 
     memory: Memory
 
     regs: Registers
 
-    def __init__(self, bin: str, implementation: str = 'gdb', **kwargs) -> None:
+    def __init__(self, bin: str, implementation: str = "gdb", **kwargs: dict[str, Any]) -> None:
         impl = Implementation.from_string(implementation)
         ## TODO: check for the right architecture and setup the regs
         self.__internal_injector = impl(bin, **kwargs)
@@ -59,33 +59,39 @@ class Injector:
     def reset(self) -> None:
         self.__internal_injector.reset()
 
-    def set_result_condition(self, event: str, callback: Callable, **kwargs) -> None:
+    def set_result_condition(
+        self, event: str, callback: Callable[..., Any], **kwargs: dict[str, Any]
+    ) -> None:
         self.__internal_injector.set_event(event, callback, **kwargs)
 
         self.events[event] = callback
 
     @overload
-    def run(self) -> str:
-        ...
+    def run(self) -> str: ...
 
     @overload
-    def run(self, timeout: timedelta, injection_delay: timedelta, inject_func: Callable) -> str:
-        ...
+    def run(
+        self, timeout: timedelta, injection_delay: timedelta, inject_func: Callable[..., Any]
+    ) -> str: ...
 
-    def run(self, timeout: timedelta | None = None, injection_delay: timedelta | None = None, inject_func: Callable | None = None) -> str:
+    def run(
+        self,
+        timeout: timedelta | None = None,
+        injection_delay: timedelta | None = None,
+        inject_func: Callable[..., Any] | None = None,
+    ) -> str:
         if injection_delay is None or inject_func is None:
             return self.__internal_injector.run(blocking=True)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-
             event = self.__internal_injector.run(blocking=False)
 
             """
             This means that the event was triggered before the injection could take place.
             TODO: Maybe we should return the event instead of 'unknown'? Should this be an error?
             """
-            if event != 'unknown':
-                print('Event triggered before injection')
+            if event != "unknown":
+                print("Event triggered before injection")
                 return event
 
             time.sleep(injection_delay.total_seconds())
@@ -98,10 +104,10 @@ class Injector:
             try:
                 if timeout is None:
                     return proc.result()
-                
+
                 return proc.result(timeout=timeout.total_seconds())
             except concurrent.futures.TimeoutError:
-                return 'Timeout'
+                return "Timeout"
 
     def close(self) -> None:
         self.__internal_injector.close()

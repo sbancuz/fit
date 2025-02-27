@@ -4,11 +4,13 @@ from fit.elf import ELF
 from fit.interfaces.internal_injector import InternalInjector
 from fit.mapping import Mapping
 
+
 class IntList(list[int]):
     """
     This class has to be used as an intermediary to allow |= like operations on lists of integers.
     They are defined as element-wise operations.
     """
+
     def __or__(self, other: int) -> list[int]:
         return list([x | other for x in self])
 
@@ -24,8 +26,8 @@ class IntList(list[int]):
     def __rshift__(self, other: int) -> list[int]:
         return list([x >> other for x in self])
 
-class Memory:
 
+class Memory:
     __internal_injector: InternalInjector
 
     elf: ELF
@@ -42,16 +44,13 @@ class Memory:
         self.word_size = self.elf.bits // 8
 
     @overload
-    def __getitem__(self, addr: int) -> int:
-        ...
+    def __getitem__(self, addr: int) -> int: ...
 
     @overload
-    def __getitem__(self, addr: str) -> int:
-        ...
+    def __getitem__(self, addr: str) -> int: ...
 
     @overload
-    def __getitem__(self, addr: slice) -> IntList:
-        ...
+    def __getitem__(self, addr: slice) -> IntList: ...
 
     def __getitem__(self, addr: int | str | slice) -> int | IntList:
         if isinstance(addr, str):
@@ -74,29 +73,29 @@ class Memory:
         if step == self.word_size:
             return self.__internal_injector.read_memory(start, self.word_size)
 
-        return IntList([self.__internal_injector.read_memory(true_addr, self.word_size)
-                for true_addr in range(start, end, step)])
+        return IntList(
+            [
+                self.__internal_injector.read_memory(true_addr, self.word_size)
+                for true_addr in range(start, end, step)
+            ]
+        )
 
     @overload
-    def __setitem__(self, addr: int, value: int) -> None:
-        ...
+    def __setitem__(self, addr: int, value: int) -> None: ...
 
     @overload
-    def __setitem__(self, addr: str, value: int) -> None:
-        ...
+    def __setitem__(self, addr: str, value: int) -> None: ...
 
     @overload
-    def __setitem__(self, addr: slice, value: int) -> None:
-        ...
+    def __setitem__(self, addr: slice, value: int) -> None: ...
 
     @overload
-    def __setitem__(self, addr: slice, value: list[int]) -> None:
-        ...
+    def __setitem__(self, addr: slice, value: list[int]) -> None: ...
 
     def __setitem__(self, addr: int | str | slice, value: int | list[int]) -> None:
         if isinstance(addr, str):
             start = self.elf.symbols[addr].value
-            step = self.word_size 
+            step = self.word_size
             end = start + step
         elif isinstance(addr, int):
             start = addr

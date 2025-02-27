@@ -8,6 +8,7 @@ gdb_response = List[Dict[Any, Any]]
 # logger = logging.basicConfig(
 # )
 
+
 class GDBController:
     controller: GdbController
 
@@ -17,7 +18,7 @@ class GDBController:
     def write(self, command: str) -> gdb_response:
         # pprint(f'--> {command}')
         # logger.debug(f'--> {command}')
-        r = self.controller.write(command)
+        r: gdb_response = self.controller.write(command)
 
         # pprint(f'<-- {r}')
         # logger.debug(f'<-- {r}')
@@ -25,7 +26,7 @@ class GDBController:
         return r
 
     def wait_response(self) -> gdb_response:
-        r = self.controller.get_gdb_response(raise_error_on_timeout=False)
+        r: gdb_response = self.controller.get_gdb_response(raise_error_on_timeout=False)
         # pprint(f'<-- {r}')
         # logger.debug(f'<-- {r}')
         return r

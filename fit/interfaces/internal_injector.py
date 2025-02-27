@@ -1,17 +1,17 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Callable, Type, Self
+from typing import Any, Callable, Type, Self
 
 from fit.mapping import Mapping
 
-class InternalInjector(ABC):
 
+class InternalInjector(ABC):
     @classmethod
     def get_class(cls) -> Type[Self]:  # Ensures correct subclass return type
         return cls  # Returns the class itself
 
     @abstractmethod
-    def __init__(self: InternalInjector, elf_path: str,  **kwargs) -> None:
+    def __init__(self: InternalInjector, elf_path: str, **kwargs: dict[str, Any]) -> None:
         """Constructor method."""
 
     @abstractmethod
@@ -19,7 +19,12 @@ class InternalInjector(ABC):
         """Reset the injector to its initial state."""
 
     @abstractmethod
-    def set_event(self: InternalInjector, event: str, callback: Callable, **kwargs) -> None:
+    def set_event(
+        self: InternalInjector,
+        event: str,
+        callback: Callable[..., None],
+        **kwargs: dict[str, Any],
+    ) -> None:
         """Set a handler for an event."""
 
     @abstractmethod
@@ -47,17 +52,13 @@ class InternalInjector(ABC):
         """Run the injector for a given amount of time."""
 
     @abstractmethod
-    def get_register_names(self: InternalInjector) -> list[str]:
-        ...
+    def get_register_names(self: InternalInjector) -> list[str]: ...
 
     @abstractmethod
-    def is_running(self: InternalInjector) -> bool:
-        ...
+    def is_running(self: InternalInjector) -> bool: ...
 
     @abstractmethod
-    def interrupt(self: InternalInjector) -> None:
-        ...
+    def interrupt(self: InternalInjector) -> None: ...
 
     @abstractmethod
-    def get_mappings(self: InternalInjector) -> list[Mapping]:
-        ...
+    def get_mappings(self: InternalInjector) -> list[Mapping]: ...

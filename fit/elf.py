@@ -1,10 +1,10 @@
 import lief
 
-class ELF:
 
+class ELF:
     __bin: lief.ELF.Binary
 
-    symbols: 'ELF.Symbols'
+    symbols: "ELF.Symbols"
 
     def __init__(self, path: str) -> None:
         self.__bin = lief.parse(path)
