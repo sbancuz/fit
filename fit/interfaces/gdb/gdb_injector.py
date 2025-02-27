@@ -1,4 +1,7 @@
+import re
+
 from fit.interfaces.internal_injector import InternalInjector
+from fit.mapping import Mapping
 from fit.interfaces.gdb.controller import GDBController, gdb_response
 
 from typing import Callable, Literal
@@ -215,4 +218,40 @@ class GDBIjector(InternalInjector):
     def interrupt(self) -> None:
         self.controller.write('-exec-interrupt --all')
         self.running = False
+
+
+    def get_mappings(self) -> list[Mapping]:
+        mappings = self.controller.write('-interpreter-exec console "info proc mappings"')
+        perm_flags = {
+            'r' : Mapping.Permissions.READ,
+            'w' : Mapping.Permissions.WRITE,
+            'x' : Mapping.Permissions.EXEC,
+            'p' : Mapping.Permissions.PRIVATE,
+        }
+
+        res = []
+        for line in mappings[3:-1]:
+            parts = re.split(r'\s+', line['payload'])
+
+            if len(parts) < 5:
+                ## TODO: Log invalid mapping
+                return []
+
+            perms = 0
+            for c, p in zip("rwxp", parts[4]):
+                if p == c:
+                    perms |= perm_flags[p]
+
+            mapping = Mapping(
+                int(parts[0], 16),
+                int(parts[1], 16),
+                int(parts[2], 16),
+                int(parts[3], 16),
+                perms,
+                " ".join(parts[5:]) if len(parts) > 5 else "",
+            )
+
+            res.append(mapping)
+
+        return res
 

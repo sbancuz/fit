@@ -2,6 +2,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Callable, Type, Self
 
+from fit.mapping import Mapping
+
 class InternalInjector(ABC):
 
     @classmethod
@@ -54,4 +56,8 @@ class InternalInjector(ABC):
 
     @abstractmethod
     def interrupt(self: InternalInjector) -> None:
+        ...
+
+    @abstractmethod
+    def get_mappings(self: InternalInjector) -> list[Mapping]:
         ...
