@@ -9,6 +9,10 @@ from fit.interfaces.internal_injector import InternalInjector
 from fit.memory import Memory
 
 
+def noop() -> None:
+    return
+
+
 class Registers:
     __internal_injector: InternalInjector
 
@@ -46,7 +50,12 @@ class Injector:
 
     regs: Registers
 
-    def __init__(self, bin: str, implementation: str = "gdb", **kwargs: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        bin: str,
+        implementation: str = "gdb",
+        **kwargs: Any,
+    ) -> None:
         impl = Implementation.from_string(implementation)
         ## TODO: check for the right architecture and setup the regs
         self.__internal_injector = impl(bin, **kwargs)
@@ -59,7 +68,7 @@ class Injector:
         self.__internal_injector.reset()
 
     def set_result_condition(
-        self, event: str, callback: Callable[..., Any], **kwargs: dict[str, Any]
+        self, event: str, callback: Callable[..., Any] = noop, **kwargs: dict[str, Any]
     ) -> None:
         self.__internal_injector.set_event(event, callback, **kwargs)
 
