@@ -1,5 +1,6 @@
+from typing import Any, Dict, List
+
 from pygdbmi.gdbcontroller import GdbController
-from typing import List, Dict, Any
 
 # import logging
 

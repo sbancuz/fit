@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Type, Self
+from typing import Any, Callable, Self, Type
 
 from fit.mapping import Mapping
 

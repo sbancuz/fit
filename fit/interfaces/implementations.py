@@ -1,6 +1,5 @@
-from typing import Type
-
 import enum
+from typing import Type
 
 from fit.interfaces.gdb.gdb_injector import GDBIjector
 from fit.interfaces.internal_injector import InternalInjector

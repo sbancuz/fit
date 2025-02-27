@@ -1,10 +1,9 @@
 import re
+from typing import Any, Callable, Literal
 
+from fit.interfaces.gdb.controller import GDBController, gdb_response
 from fit.interfaces.internal_injector import InternalInjector
 from fit.mapping import Mapping
-from fit.interfaces.gdb.controller import GDBController, gdb_response
-
-from typing import Callable, Literal, Any
 
 GDB_FLAGS = ["-q", "--nx", "--interpreter=mi3"]
 

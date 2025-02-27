@@ -1,12 +1,11 @@
-from typing import Callable, overload, Any
-from datetime import timedelta
-
 import concurrent.futures
 import time
+from datetime import timedelta
+from typing import Any, Callable, overload
 
 from fit.elf import ELF
-from fit.interfaces.internal_injector import InternalInjector
 from fit.interfaces.implementations import Implementation
+from fit.interfaces.internal_injector import InternalInjector
 from fit.memory import Memory
 
 
