@@ -151,7 +151,7 @@ class GDBIjector(InternalInjector):
         """Access memory at a given address."""
 
         assert self.controller, "GDB controller not initialized"
-        assert not self.is_running()
+        assert not self.is_running(), "Cannot read memory while process is running"
 
         r = self.controller.write(
             f"-data-read-memory-bytes {hex(address)} {word_size}",
@@ -173,7 +173,7 @@ class GDBIjector(InternalInjector):
         """Write a value to memory at a given address."""
 
         assert self.controller, "GDB controller not initialized"
-        assert not self.is_running()
+        assert not self.is_running(), "Cannot write memory while process is running"
 
         self.controller.write(
             f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, 'little')}",
@@ -189,7 +189,9 @@ class GDBIjector(InternalInjector):
 
         assert self.controller, "GDB controller not initialized"
         ## TODO: Test if this is true on the board
-        assert self.state != self.State.EXIT, "Cannot read registers after process has stopped"
+        assert not self.is_running() and self.state != self.State.EXIT, (
+            "Cannot read registers while process is running or has exited"
+        )
 
         r = self.controller.write(
             "-data-list-register-values d",
@@ -214,7 +216,9 @@ class GDBIjector(InternalInjector):
 
         assert self.controller, "GDB controller not initialized"
         ## TODO: Test if this is true on the board
-        assert self.state != self.State.EXIT, "Cannot write registers after process has stopped"
+        assert not self.is_running() and self.state != self.State.EXIT, (
+            "Cannot write registers while process is running or has exited"
+        )
 
         self.controller.write(
             f'-interpreter-exec console "set ${register}={hex(value)}"',
@@ -246,13 +250,15 @@ class GDBIjector(InternalInjector):
                     continue
 
                 if "reason" in msg["payload"] and msg["payload"]["reason"] == "exited-normally":
-                    self.stopped = self.State.EXIT
+                    self.state = self.State.EXIT
+                    print("hallo")
 
                     return "exit"
 
                 for b in self.breakpoints:
                     if b.id == int(msg["payload"]["bkptno"]):
                         self.state = self.State.INTERRUPT
+                        # print(self.state)
 
                         b.callback(**b.kwargs)
                         return b.name
