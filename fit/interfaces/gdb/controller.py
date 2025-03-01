@@ -21,6 +21,9 @@ def check(data: dict[str, Any], wait_for: dict[str, Any]) -> bool:
         if key not in data:
             return False
 
+        if value is None:
+            continue
+
         if isinstance(value, dict):
             if not check(data[key], value):
                 return False
