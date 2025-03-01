@@ -46,7 +46,9 @@ class GDBController:
     def __init__(self, command: list[str]) -> None:
         self.controller = GdbController(command=command)
 
-    def write(self, command: str, wait_for: dict[str, Any] | None = None) -> gdb_response:
+    def write(
+        self, command: str, wait_for: dict[str, Any] | None = None, whole_response: bool = False
+    ) -> gdb_response:
         # pprint(f'--> {command}')
         # logger.debug(f'--> {command}')
         r: gdb_response = self.controller.write(command)
@@ -55,6 +57,9 @@ class GDBController:
             while True:
                 for msg in r:
                     if check(msg, wait_for):
+                        if whole_response:
+                            return r
+
                         return [msg]
 
                 r = self.controller.get_gdb_response(raise_error_on_timeout=False)
@@ -63,6 +68,11 @@ class GDBController:
         # logger.debug(f'<-- {r}')
 
         return r
+
+    def flush(self) -> None:
+        r: gdb_response = self.controller.get_gdb_response(raise_error_on_timeout=False)
+        if r == []:
+            return
 
     def wait_response(self) -> gdb_response:
         r: gdb_response = self.controller.get_gdb_response(raise_error_on_timeout=False)

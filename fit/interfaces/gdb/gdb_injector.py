@@ -273,7 +273,16 @@ class GDBIjector(InternalInjector):
         self.state = self.State.INTERRUPT
 
     def get_mappings(self) -> list[Mapping]:
-        mappings = self.controller.write('-interpreter-exec console "info proc mappings"')
+        self.controller.flush()
+        mappings = self.controller.write(
+            '-interpreter-exec console "info proc mappings"',
+            wait_for={
+                "message": "done",
+                "payload": None,
+                "type": "result",
+            },
+            whole_response=True,
+        )
         perm_flags = {
             "r": Mapping.Permissions.READ,
             "w": Mapping.Permissions.WRITE,
