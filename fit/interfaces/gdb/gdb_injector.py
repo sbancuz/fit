@@ -1,3 +1,4 @@
+import enum
 import re
 from typing import Any, Callable, Literal
 
@@ -61,11 +62,15 @@ class GDBIjector(InternalInjector):
             self.callback = callback
             self.kwargs = kwargs
 
-    running: bool = False
-
     breakpoints: list[Breakpoint] = []
 
-    stopped: bool = False
+    class State(enum.Enum):
+        STARTING = 0
+        RUNNING = 1
+        INTERRUPT = 2
+        EXIT = 3
+
+    state: State = State.STARTING
 
     def __init__(self, elf_path: str, **kwargs: dict[str, Any]) -> None:
         if "gdb_path" in kwargs and isinstance(kwargs["gdb_path"], str):
@@ -75,7 +80,7 @@ class GDBIjector(InternalInjector):
             command=[self.gdb_path, *GDB_FLAGS, elf_path],
         )
 
-        self.controller.write("-gdb-set target-async on")
+        self.controller.write("-gdb-set mi-async on")
 
         if "remote" in kwargs and isinstance(kwargs["remote"], str):
             self.remote(address=kwargs["remote"])
@@ -91,12 +96,20 @@ class GDBIjector(InternalInjector):
         self.controller.write("-target-reset")
 
         if self.embeded:
+            ## TODO: Wait for
             self.controller.write('-interpreter-exec console "monitor reset halt"')
         else:
-            self.controller.write('-interpreter-exec console "start"')
+            self.controller.write(
+                '-interpreter-exec console "start"',
+                wait_for={
+                    "message": "breakpoint-deleted",
+                    "payload": {"id": "1"},
+                    "type": "notify",
+                },
+            )
 
     def is_running(self) -> bool:
-        return self.running
+        return self.state == self.State.RUNNING
 
     def remote(self, address: str) -> gdb_response:
         assert ":" in address, 'Remote address must be in the format "host:port"'
@@ -112,7 +125,14 @@ class GDBIjector(InternalInjector):
         """Set a handler for an event."""
 
         assert self.controller, "GDB controller not initialized"
-        bp = self.controller.write(f"-break-insert {event}")
+        bp = self.controller.write(
+            f"-break-insert {event}",
+            wait_for={
+                "message": "done",
+                "payload": {"bkpt": {}},
+                "type": "result",
+            },
+        )
 
         assert bp[0]["message"] == "done", "Error setting event"
         assert not self.is_running()
@@ -133,7 +153,17 @@ class GDBIjector(InternalInjector):
         assert self.controller, "GDB controller not initialized"
         assert not self.is_running()
 
-        r = self.controller.write(f"-data-read-memory-bytes {hex(address)} {word_size}")[0]
+        r = self.controller.write(
+            f"-data-read-memory-bytes {hex(address)} {word_size}",
+            wait_for={
+                "message": "done",
+                "payload": {"memory": []},
+                "stream": "stdout",
+                "token": None,
+                "type": "result",
+            },
+        )[0]
+
         if r["message"] != "done" or r["type"] != "result":
             print(r)
 
@@ -146,7 +176,12 @@ class GDBIjector(InternalInjector):
         assert not self.is_running()
 
         self.controller.write(
-            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, 'little')}"
+            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, 'little')}",
+            wait_for={
+                "message": "done",
+                "payload": None,
+                "type": "result",
+            },
         )
 
     def read_register(self, register: str) -> int:
@@ -154,16 +189,22 @@ class GDBIjector(InternalInjector):
 
         assert self.controller, "GDB controller not initialized"
         ## TODO: Test if this is true on the board
-        assert not self.is_running() and self.stopped, (
-            "Cannot read registers after process has stopped"
-        )
+        assert self.state != self.State.EXIT, "Cannot read registers after process has stopped"
 
-        r = self.controller.write("-data-list-register-values d")[0]
+        r = self.controller.write(
+            "-data-list-register-values d",
+            wait_for={
+                "message": "done",
+                "payload": {"register-values": []},
+                "type": "result",
+            },
+        )[0]
 
         assert r["message"] == "done", "Error reading register values"
         idx = self.register_names.index(register)
 
         val = r["payload"]["register-values"][idx]
+
         assert "value" in val, "Vector/Special registers not supported yet!"
 
         return int(val["value"])
@@ -173,11 +214,16 @@ class GDBIjector(InternalInjector):
 
         assert self.controller, "GDB controller not initialized"
         ## TODO: Test if this is true on the board
-        assert not self.is_running() and self.stopped, (
-            "Cannot write registers after process has stopped"
-        )
+        assert self.state != self.State.EXIT, "Cannot write registers after process has stopped"
 
-        self.controller.write(f"-gdb-set ${register}={to_gdb_hex(value, 'little')}")
+        self.controller.write(
+            f'-interpreter-exec console "set ${register}={hex(value)}"',
+            wait_for={
+                "message": "done",
+                "payload": None,
+                "type": "result",
+            },
+        )
 
     def close(self) -> None:
         """Close the injector."""
@@ -191,24 +237,22 @@ class GDBIjector(InternalInjector):
         assert self.controller, "GDB controller not initialized"
         assert not self.is_running()
 
-        self.running = True
+        self.state = self.State.RUNNING
         bp = self.controller.write("-exec-continue")
 
-        while self.running:
+        while self.state == self.State.RUNNING:
             for msg in bp:
                 if msg["message"] != "stopped":
                     continue
 
                 if "reason" in msg["payload"] and msg["payload"]["reason"] == "exited-normally":
-                    self.stopped = True
-                    self.running = False
+                    self.stopped = self.State.EXIT
 
                     return "exit"
 
                 for b in self.breakpoints:
                     if b.id == int(msg["payload"]["bkptno"]):
-                        self.stopped = True
-                        self.running = False
+                        self.state = self.State.INTERRUPT
 
                         b.callback(**b.kwargs)
                         return b.name
@@ -218,9 +262,7 @@ class GDBIjector(InternalInjector):
 
             bp = self.controller.wait_response()
 
-        self.stopped = True
-        self.running = False
-
+        self.state = self.State.EXIT
         return "unknown"
 
     def get_register_names(self) -> list[str]:
@@ -228,7 +270,7 @@ class GDBIjector(InternalInjector):
 
     def interrupt(self) -> None:
         self.controller.write("-exec-interrupt --all")
-        self.running = False
+        self.state = self.State.INTERRUPT
 
     def get_mappings(self) -> list[Mapping]:
         mappings = self.controller.write('-interpreter-exec console "info proc mappings"')
