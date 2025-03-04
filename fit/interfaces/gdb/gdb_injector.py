@@ -44,23 +44,15 @@ class GDBIjector(InternalInjector):
 
         name: str
 
-        callback: Callable[..., None]
-
-        kwargs: dict[str, Any]
-
         def __init__(
             self,
             id: int,
             address: int,
             name: str,
-            callback: Callable[..., None],
-            **kwargs: dict[str, Any],
         ) -> None:
             self.id = id
             self.address = address
             self.name = name
-            self.callback = callback
-            self.kwargs = kwargs
 
     breakpoints: list[Breakpoint] = []
 
@@ -88,7 +80,15 @@ class GDBIjector(InternalInjector):
         if "embeded" in kwargs and isinstance(kwargs["embeded"], bool):
             self.embeded = kwargs["embeded"]
 
-        r = self.controller.write("-data-list-register-names")
+        r = self.controller.write(
+            "-data-list-register-names",
+            wait_for={
+                "type": "result",
+                "message": "done",
+                "payload": {"register-names": []},
+            },
+        )
+
         self.register_names = r[0]["payload"]["register-names"]
 
     def reset(self) -> None:
@@ -96,8 +96,14 @@ class GDBIjector(InternalInjector):
         self.controller.write("-target-reset")
 
         if self.embeded:
-            ## TODO: Wait for
-            self.controller.write('-interpreter-exec console "monitor reset halt"')
+            self.controller.write(
+                '-interpreter-exec console "monitor reset init"',
+                wait_for={
+                    "type": "result",
+                    "message": "done",
+                    "payload": None,
+                },
+            )
         else:
             self.controller.write(
                 '-interpreter-exec console "start"',
@@ -119,9 +125,7 @@ class GDBIjector(InternalInjector):
 
         return self.controller.write(f"-target-select extended-remote {address}")
 
-    def set_event(
-        self, event: str, callback: Callable[..., None], **kwargs: dict[str, Any]
-    ) -> None:
+    def set_event(self, event: str) -> None:
         """Set a handler for an event."""
 
         assert self.controller, "GDB controller not initialized"
@@ -142,8 +146,6 @@ class GDBIjector(InternalInjector):
                 id=int(bp[0]["payload"]["bkpt"]["number"]),
                 address=bp[0]["payload"]["bkpt"]["addr"],  ## TODO: actually parse this
                 name=event,
-                callback=callback,
-                kwargs=kwargs,
             )
         )
 
@@ -251,16 +253,13 @@ class GDBIjector(InternalInjector):
 
                 if "reason" in msg["payload"] and msg["payload"]["reason"] == "exited-normally":
                     self.state = self.State.EXIT
-                    print("hallo")
 
                     return "exit"
 
                 for b in self.breakpoints:
                     if b.id == int(msg["payload"]["bkptno"]):
                         self.state = self.State.INTERRUPT
-                        # print(self.state)
 
-                        b.callback(**b.kwargs)
                         return b.name
 
             if not blocking:

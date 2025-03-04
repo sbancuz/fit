@@ -42,13 +42,21 @@ class Registers:
 class Injector:
     __internal_injector: InternalInjector
 
-    events: dict[str, Callable[..., Any]] = {}
-
     binary: ELF
 
     memory: Memory
 
     regs: Registers
+
+    class Event:
+        callback: Callable[..., Any]
+        kwargs: dict[str, Any]
+
+        def __init__(self, callback: Callable[..., Any], **kwargs: dict[str, Any]) -> None:
+            self.callback = callback
+            self.kwargs = kwargs
+
+    events: dict[str, Event] = {}
 
     def __init__(
         self,
@@ -70,9 +78,9 @@ class Injector:
     def set_result_condition(
         self, event: str, callback: Callable[..., Any] = noop, **kwargs: dict[str, Any]
     ) -> None:
-        self.__internal_injector.set_event(event, callback, **kwargs)
+        self.__internal_injector.set_event(event)
 
-        self.events[event] = callback
+        self.events[event] = self.Event(callback, **kwargs)
 
     @overload
     def run(self) -> str: ...
@@ -111,11 +119,15 @@ class Injector:
 
             try:
                 if timeout is None:
-                    return proc.result()
-
-                return proc.result(timeout=timeout.total_seconds())
+                    event = proc.result()
+                else:
+                    event = proc.result(timeout=timeout.total_seconds())
             except concurrent.futures.TimeoutError:
                 return "Timeout"
+
+            self.events[event].callback(self, **self.events[event].kwargs)
+
+            return event
 
     def close(self) -> None:
         self.__internal_injector.close()

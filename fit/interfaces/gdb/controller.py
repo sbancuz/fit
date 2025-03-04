@@ -51,11 +51,15 @@ class GDBController:
     ) -> gdb_response:
         # pprint(f'--> {command}')
         # logger.debug(f'--> {command}')
-        r: gdb_response = self.controller.write(command)
+        r: gdb_response = self.controller.write(command, raise_error_on_timeout=False)
 
         if wait_for is not None:
             while True:
                 for msg in r:
+                    if "message" in msg and msg["message"] == "error":
+                        print(msg)
+                        return r
+
                     if check(msg, wait_for):
                         if whole_response:
                             return r

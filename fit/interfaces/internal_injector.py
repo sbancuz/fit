@@ -20,12 +20,7 @@ class InternalInjector(ABC):
         """Reset the injector to its initial state."""
 
     @abstractmethod
-    def set_event(
-        self: InternalInjector,
-        event: str,
-        callback: Callable[..., None],
-        **kwargs: dict[str, Any],
-    ) -> None:
+    def set_event(self: InternalInjector, event: str) -> None:
         """Set a handler for an event."""
 
     @abstractmethod
