@@ -3,6 +3,7 @@ import time
 from datetime import timedelta
 from typing import Any, Callable, overload
 
+from fit.csv import export_to_csv
 from fit.elf import ELF
 from fit.interfaces.implementations import Implementation
 from fit.interfaces.internal_injector import InternalInjector
@@ -57,6 +58,10 @@ class Injector:
             self.kwargs = kwargs
 
     events: dict[str, Event] = {}
+
+    golden: dict[str, Any] = {}
+
+    runs: dict[str, list[Any]] = {}
 
     def __init__(
         self,
@@ -131,3 +136,43 @@ class Injector:
 
     def close(self) -> None:
         self.__internal_injector.close()
+
+    def add_run(self, result: dict[str, Any], golden: bool = False) -> None:
+        for key, value in result.items():
+            if isinstance(value, list):
+                for val in value:
+                    assert val is not None, f"Value for key {key} is None"
+                    assert not isinstance(val, dict), f"Value for key {key} is a dictionary"
+            else:
+                assert value is not None, f"Value for key {key} is None"
+                assert not isinstance(value, dict), f"Value for key {key} is a dictionary"
+
+        assert self.golden != {} and self.runs != {} and self.golden.keys() == result.keys(), (
+            "Golden run and runs must have the same keys"
+        )
+
+        if golden:
+            self.golden = result
+        else:
+            for key, value in result.items():
+                self.runs[key].append(value)
+
+    ## TODO: Make a way better reporting function
+    def report(self) -> None:
+        print("Golden:")
+        for key, value in self.golden.items():
+            print(f"{key}: {value}")
+
+        print("Runs:")
+        for key, value in self.runs.items():
+            for i, run in enumerate(value):
+                print(f"{key} ({i}): {run}")
+
+    def save(self, path: str) -> None:
+        golden_path = path.split(".csv")[0] + "_golden.csv"
+
+        if self.golden != {}:
+            export_to_csv(golden_path, self.golden)
+
+        if self.runs != {}:
+            export_to_csv(path, self.runs)
