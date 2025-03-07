@@ -1,117 +1,60 @@
 from __future__ import annotations
 
 import random
-from abc import ABC, abstractmethod
 
+from fit.distribution import Distribution, Uniform
 from fit.memory import IntList
 
 
 class Stencil:
-    distribution: Distribution
-    pattern: int
-    max_size: int
+    offset_distribution: Distribution
+    pattern_distribution: Distribution
+    patterns: list[int]
+    pattern_size: int
+    word_size: int
 
-    def __init__(self, distribution: Distribution, pattern: int, max_size: int = 32):
-        self.distribution = distribution
-        self.pattern = pattern
-        self.max_size = max_size
+    def __init__(
+        self,
+        patterns: int | list[int],
+        offset_distribution: Distribution = Uniform(0, 0),
+        pattern_distribution: Distribution = Uniform(0, 0),
+        word_size: int = 32,
+    ) -> None:
+        self.offset_distribution = offset_distribution
+        self.pattern_distribution = pattern_distribution
+        self.patterns = [patterns] if isinstance(patterns, int) else patterns
+        self.pattern_size = max([pattern.bit_length() for pattern in self.patterns])
+        self.word_size = word_size
 
-        pattern_size = pattern.bit_length()
-        assert 0 <= pattern_size and pattern_size <= max_size
-        assert (
-            distribution.start_bit <= pattern.bit_length()
-            and pattern.bit_length() <= distribution.end_bit
+        assert len(self.patterns) > 0, "At least one pattern must be provided."
+        assert len(self.patterns) - 1 == pattern_distribution.length(), (
+            "Number of patterns must match chooser length."
         )
 
-    def random(self) -> int | IntList:
-        if self.distribution.start_bit == self.distribution.end_bit:
-            return self.distribution.start_bit
+    def random(self) -> IntList:
+        pattern = self.patterns[self.pattern_distribution.random()]
+        val = pattern << self.offset_distribution.random()
 
-        if self.distribution.end_bit - self.distribution.start_bit < self.max_size:
-            return self.pattern << self.distribution.random()
+        max_value = (1 << self.word_size) - 1
+        max_number_of_chunks = (max_value.bit_length() + self.word_size - 1) // self.word_size
 
-        number_of_chunks = self.distribution.length() // self.max_size + 1
-        res = [0 for _ in range(number_of_chunks)]
+        res = [0 for _ in range(max_number_of_chunks)]
+        for i in range(max_number_of_chunks):
+            res[i] = (val >> (self.word_size * i)) & max_value
 
-        choice = self.distribution.random()
-        res[choice // self.max_size] = self.pattern << (choice % self.max_size)
-        if choice % self.max_size + self.pattern.bit_length() > self.max_size:
-            res[choice // self.max_size + 1] = self.pattern >> (
-                self.max_size - choice % self.max_size
-            )
+        return IntList(res)
 
-        return res if isinstance(res, int) else IntList(res)
-
-    def layer(self, max_times: int, min_times: int = 0) -> int | IntList:
+    def layer(self, max_times: int, min_times: int = 0) -> IntList:
         assert min_times <= max_times, "Minimum times must be less than maximum times."
 
-        res: int | list[int] = 0
-        if not self.distribution.length() < self.max_size:
-            res = [0 for _ in range(self.distribution.length() // self.max_size + 1)]
+        max_value = (1 << self.word_size) - 1
+        max_number_of_chunks = (max_value.bit_length() + self.word_size - 1) // self.word_size
+        res = [0 for _ in range(max_number_of_chunks)]
 
         for _ in range(random.randint(min_times, max_times)):
-            ## TODO: Maybe use or instead of xor
             choice = self.random()
 
-            if isinstance(res, int):
-                assert isinstance(choice, int)
+            for i in range(len(res)):
+                res[i] ^= choice[i]
 
-                res ^= choice
-            else:
-                assert isinstance(choice, list)
-                for i in range(len(res)):
-                    res[i] ^= choice[i]
-
-        return res if isinstance(res, int) else IntList(res)
-
-
-class Distribution(ABC):
-    start_bit = 0
-    end_bit = 0
-
-    def __init__(self, start_bit: int, end_bit: int) -> None:
-        self.start_bit = start_bit
-        self.end_bit = end_bit
-
-    def length(self) -> int:
-        return self.end_bit - self.start_bit
-
-    @abstractmethod
-    def random(self) -> int: ...
-
-    """
-        Returns the bit position for the stencil pattern.
-    """
-
-    @abstractmethod
-    def shrink_bounds(self, pattern_size: int) -> None:
-        remove = pattern_size // 2
-        leftover = pattern_size % 2
-
-        self.start_bit += remove
-        self.end_bit -= remove + leftover
-
-
-class Uniform(Distribution):
-    def random(self) -> int:
-        return random.randint(self.start_bit, self.end_bit)
-
-
-class Normal(Distribution):
-    mean: float
-    variance: float
-
-    def __init__(self, mean: float, variance: float) -> None:
-        self.mean = mean
-        self.variance = variance
-
-        self.start_bit = int(mean - variance / 2)
-        self.end_bit = int(mean + variance / 2)
-
-    def random(self) -> int:
-        return int(random.gauss(self.mean, self.variance))
-
-    def shrink_bounds(self, pattern_size: int) -> None:
-        super().shrink_bounds(pattern_size)
-
-        self.variance -= float(pattern_size) / 2
+        return IntList(res)

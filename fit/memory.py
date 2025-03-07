@@ -90,9 +90,9 @@ class Memory:
     def __setitem__(self, addr: slice, value: int) -> None: ...
 
     @overload
-    def __setitem__(self, addr: slice, value: list[int]) -> None: ...
+    def __setitem__(self, addr: slice, value: list[int] | IntList) -> None: ...
 
-    def __setitem__(self, addr: int | str | slice, value: int | list[int]) -> None:
+    def __setitem__(self, addr: int | str | slice, value: int | list[int] | IntList) -> None:
         if isinstance(addr, str):
             start = self.elf.symbols[addr].value
             step = self.word_size
@@ -113,7 +113,10 @@ class Memory:
         if isinstance(value, int):
             for true_addr in range(start, end, step):
                 self.__internal_injector.write_memory(true_addr, value)
-        elif isinstance(value, list):
+        else:
+            if isinstance(value, IntList):
+                value = list(value)
+
             for true_addr, val in zip(range(start, end, step), value):
                 self.__internal_injector.write_memory(true_addr, val)
 
