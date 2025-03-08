@@ -1,6 +1,6 @@
 import enum
 import re
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, cast
 
 from fit.interfaces.gdb.controller import GDBController, gdb_response
 from fit.interfaces.internal_injector import InternalInjector
@@ -28,14 +28,16 @@ def to_gdb_hex(i: int, byteorder: Literal["little", "big"]) -> str:
     return "".join(f"{b:02x}" for b in byte_array)
 
 
-class GDBIjector(InternalInjector):
+class GDBInjector(InternalInjector):
     controller: GDBController
 
     gdb_path: str = "gdb_multiarch"
 
     register_names: list[str]
 
-    embeded: bool = False
+    embedded: bool = False
+
+    endianness = cast(Literal["little", "big"], "little")
 
     class Breakpoint:
         id: int
@@ -78,7 +80,7 @@ class GDBIjector(InternalInjector):
             self.remote(address=kwargs["remote"])
 
         if "embeded" in kwargs and isinstance(kwargs["embeded"], bool):
-            self.embeded = kwargs["embeded"]
+            self.embedded = kwargs["embeded"]
 
         r = self.controller.write(
             "-data-list-register-names",
@@ -95,7 +97,7 @@ class GDBIjector(InternalInjector):
         self.controller.write("-break-delete")
         self.controller.write("-target-reset")
 
-        if self.embeded:
+        if self.embedded:
             self.controller.write(
                 '-interpreter-exec console "monitor reset init"',
                 wait_for={
@@ -169,7 +171,7 @@ class GDBIjector(InternalInjector):
         if r["message"] != "done" or r["type"] != "result":
             print(r)
 
-        return get_int(r["payload"]["memory"][0]["contents"], "little")
+        return get_int(r["payload"]["memory"][0]["contents"], self.endianness)
 
     def write_memory(self, address: int, value: int) -> None:
         """Write a value to memory at a given address."""
