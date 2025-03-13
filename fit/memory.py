@@ -71,11 +71,11 @@ class Memory:
             step = addr.step if addr.step is not None else self.word_size
 
         if step == self.word_size:
-            return self.__internal_injector.read_memory(start, self.word_size)
+            return self.__internal_injector.read_memory(start)
 
         return IntList(
             [
-                self.__internal_injector.read_memory(true_addr, self.word_size)
+                self.__internal_injector.read_memory(true_addr)
                 for true_addr in range(start, end, step)
             ]
         )

@@ -24,7 +24,7 @@ class InternalInjector(ABC):
         """Set a handler for an event."""
 
     @abstractmethod
-    def read_memory(self: InternalInjector, address: int, word_size: int) -> int:
+    def read_memory(self: InternalInjector, address: int) -> int:
         """Access memory at a given address."""
 
     @abstractmethod

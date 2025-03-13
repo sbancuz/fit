@@ -1,6 +1,7 @@
 import enum
 import re
-from typing import Any, Callable, Literal
+import time
+from typing import Any, Literal
 
 from fit.interfaces.gdb.controller import GDBController, gdb_response
 from fit.interfaces.internal_injector import InternalInjector
@@ -36,6 +37,8 @@ class GDBIjector(InternalInjector):
     register_names: list[str]
 
     embeded: bool = False
+
+    word_size: int = 4
 
     class Breakpoint:
         id: int
@@ -80,6 +83,9 @@ class GDBIjector(InternalInjector):
         if "embeded" in kwargs and isinstance(kwargs["embeded"], bool):
             self.embeded = kwargs["embeded"]
 
+        if "word_size" in kwargs and isinstance(kwargs["word_size"], int):
+            self.word_size = kwargs["word_size"]
+
         r = self.controller.write(
             "-data-list-register-names",
             wait_for={
@@ -96,14 +102,32 @@ class GDBIjector(InternalInjector):
         self.controller.write("-target-reset")
 
         if self.embeded:
+            """
+                Perform a hard reset on the target. This calls the monitor command `jtag_reset` in the st-util gdb server. Then, since the target is in a reset state, we wait for the DHCSR register to indicate that the target is in a reset state. If the target is not in a reset state, we wait for 0.5 seconds and check again.
+                The library cannot do this on its own because it can't access the usb device directly since it's already occupied by _this_ gdb server.
+
+            These values _should_ be portable since stlink uses them for everything, so it might be a standard.
+
+            TODO: In the case they aren't, we can just wait a bit and then continue the execution
+            """
             self.controller.write(
-                '-interpreter-exec console "monitor reset init"',
+                '-interpreter-exec console "monitor jtag_reset"',
                 wait_for={
                     "type": "result",
                     "message": "done",
                     "payload": None,
                 },
             )
+
+            STM32_REG_DHCSR = 0xE000EDF0
+            STM32_REG_DHCSR_S_RESET_ST = 1 << 25
+
+            dhcsr = self.read_memory(STM32_REG_DHCSR)
+
+            if (dhcsr & STM32_REG_DHCSR_S_RESET_ST) == 0:
+                time.sleep(0.5)
+                dhcsr = self.read_memory(STM32_REG_DHCSR)
+
         else:
             self.controller.write(
                 '-interpreter-exec console "start"',
@@ -149,14 +173,14 @@ class GDBIjector(InternalInjector):
             )
         )
 
-    def read_memory(self, address: int, word_size: int) -> int:
+    def read_memory(self, address: int) -> int:
         """Access memory at a given address."""
 
         assert self.controller, "GDB controller not initialized"
         assert not self.is_running(), "Cannot read memory while process is running"
 
         r = self.controller.write(
-            f"-data-read-memory-bytes {hex(address)} {word_size}",
+            f"-data-read-memory-bytes {hex(address)} {self.word_size}",
             wait_for={
                 "message": "done",
                 "payload": {"memory": []},

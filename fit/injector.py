@@ -1,7 +1,7 @@
 import concurrent.futures
 import time
 from datetime import timedelta
-from typing import Any, Callable, overload
+from typing import Any, Callable, Type, overload
 
 from fit.csv import export_to_csv
 from fit.elf import ELF
@@ -10,7 +10,7 @@ from fit.interfaces.internal_injector import InternalInjector
 from fit.memory import Memory
 
 
-def noop() -> None:
+def noop(_: Type["Injector"]) -> None:
     return
 
 
@@ -70,9 +70,10 @@ class Injector:
         **kwargs: Any,
     ) -> None:
         impl = Implementation.from_string(implementation)
-        ## TODO: check for the right architecture and setup the regs
-        self.__internal_injector = impl(bin, **kwargs)
         self.binary = ELF(bin)
+        kwargs["word_size"] = self.binary.bits // 8
+
+        self.__internal_injector = impl(bin, **kwargs)
 
         self.regs = Registers(self.__internal_injector, self.binary)
         self.memory = Memory(self.__internal_injector, self.binary)
