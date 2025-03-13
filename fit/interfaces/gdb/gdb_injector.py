@@ -1,7 +1,7 @@
 import enum
 import re
 import time
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from fit.interfaces.gdb.controller import GDBController, gdb_response
 from fit.interfaces.internal_injector import InternalInjector
@@ -29,14 +29,16 @@ def to_gdb_hex(i: int, byteorder: Literal["little", "big"]) -> str:
     return "".join(f"{b:02x}" for b in byte_array)
 
 
-class GDBIjector(InternalInjector):
+class GDBInjector(InternalInjector):
     controller: GDBController
 
     gdb_path: str = "gdb_multiarch"
 
     register_names: list[str]
 
-    embeded: bool = False
+    embedded: bool = False
+
+    endianness = cast(Literal["little", "big"], "little")
 
     word_size: int = 4
 
@@ -81,7 +83,7 @@ class GDBIjector(InternalInjector):
             self.remote(address=kwargs["remote"])
 
         if "embeded" in kwargs and isinstance(kwargs["embeded"], bool):
-            self.embeded = kwargs["embeded"]
+            self.embedded = kwargs["embeded"]
 
         if "word_size" in kwargs and isinstance(kwargs["word_size"], int):
             self.word_size = kwargs["word_size"]
@@ -101,7 +103,7 @@ class GDBIjector(InternalInjector):
         self.controller.write("-break-delete")
         self.controller.write("-target-reset")
 
-        if self.embeded:
+        if self.embedded:
             """
                 Perform a hard reset on the target. This calls the monitor command `jtag_reset` in the st-util gdb server. Then, since the target is in a reset state, we wait for the DHCSR register to indicate that the target is in a reset state. If the target is not in a reset state, we wait for 0.5 seconds and check again.
                 The library cannot do this on its own because it can't access the usb device directly since it's already occupied by _this_ gdb server.
@@ -193,7 +195,7 @@ class GDBIjector(InternalInjector):
         if r["message"] != "done" or r["type"] != "result":
             print(r)
 
-        return get_int(r["payload"]["memory"][0]["contents"], "little")
+        return get_int(r["payload"]["memory"][0]["contents"], self.endianness)
 
     def write_memory(self, address: int, value: int) -> None:
         """Write a value to memory at a given address."""
