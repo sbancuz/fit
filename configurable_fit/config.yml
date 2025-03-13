@@ -1,7 +1,7 @@
 configuration:
-  executable: "../foo"
+  executable: "foo"
   gdb_path: "gdb"
-  remote: "localhost:1234"
+  remote: true #true or false
   embedded: false
   experiment_name: "experiment"
 
@@ -14,36 +14,5 @@ configuration:
     - max: 10
   injection_function: "fault_injection_handler"
 
-where_I_want_to_do_injection:
-  variable:
-    - name: "i"
-      type: "int"
-  register:
-    - "eax"
-    - "ebx"
-  memory:
-    - "0x7ffdf000"
-    - "0x7ffdf004"
 
-distribution_and_probability_of_where_to_do_injection:
-  variable: {"i": 0.3, "j": 0.3, "k": 0.3}
-  register: {"eax": 0.2, "ebx": 0.1}
-  memory: {"0x7ffdf000": 0.5, "0x7ffdf004": 0.5}
-
-come_fare_injection:
-  operazioni:
-    - tipo: "bitflip"
-      target: "variabili"
-      descrizione: "Invertire un bit specifico nelle variabili target."
-    - tipo: "random_value"
-      target: "registri"
-      descrizione: "Sostituire il valore del registro con un valore casuale."
-    - tipo: "zeroing"
-      target: "memoria"
-      descrizione: "Azzerare il contenuto della memoria all'indirizzo specificato."
-
-injection_specifica:
-  0x80000:
-    tipo: "bitflip"
-    valore: "0x00abc00"
-    probabilità: 0.3
+injector: "example_csv.csv"

@@ -1,0 +1,8 @@
+﻿where,operation,operation_probability,value,value_probability
+i,xor,0.7,1,0.3
+i,xor,0.7,2,0.7
+
+i,and,0.1,5,1
+
+
+rax,value,0.2,1,1
