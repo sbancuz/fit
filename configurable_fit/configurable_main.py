@@ -254,7 +254,7 @@ if __name__ == "__main__":
         """
         Look at the memory and registers
         """
-        runs.append({
+        inj.add_run({
             **{variable: inj.memory[variable] for variable in injector_variables},
             **{register: inj.regs[register] for register in injector_registers},
             **{memory: inj.memory[memory] for memory in injector_memories},
