@@ -3,9 +3,12 @@ import re
 import time
 from typing import Any, Literal, cast
 
+from fit import logger
 from fit.interfaces.gdb.controller import GDBController, gdb_response
 from fit.interfaces.internal_injector import InternalInjector
 from fit.mapping import Mapping
+
+log = logger.get(__name__)
 
 GDB_FLAGS = ["-q", "--nx", "--interpreter=mi3"]
 
@@ -88,6 +91,8 @@ class GDBInjector(InternalInjector):
         if "word_size" in kwargs and isinstance(kwargs["word_size"], int):
             self.word_size = kwargs["word_size"]
 
+        self.reset()
+
         r = self.controller.write(
             "-data-list-register-names",
             wait_for={
@@ -126,7 +131,7 @@ class GDBInjector(InternalInjector):
 
             dhcsr = self.read_memory(STM32_REG_DHCSR)
 
-            if (dhcsr & STM32_REG_DHCSR_S_RESET_ST) == 0:
+            while (dhcsr & STM32_REG_DHCSR_S_RESET_ST) == 0:
                 time.sleep(0.5)
                 dhcsr = self.read_memory(STM32_REG_DHCSR)
 
@@ -144,17 +149,21 @@ class GDBInjector(InternalInjector):
         return self.state == self.State.RUNNING
 
     def remote(self, address: str) -> gdb_response:
-        assert ":" in address, 'Remote address must be in the format "host:port"'
-        assert address.split(":")[1].isdigit(), "Port must be an integer"
+        if ":" not in address:
+            log.critical('Remote address must be in the format "host:port"')
+        if not address.split(":")[1].isdigit():
+            log.critical("Port must be an integer")
 
-        assert self.controller, "GDB controller not initialized"
+        if not self.controller:
+            log.critical("GDB controller not initialized")
 
         return self.controller.write(f"-target-select extended-remote {address}")
 
     def set_event(self, event: str) -> None:
         """Set a handler for an event."""
 
-        assert self.controller, "GDB controller not initialized"
+        if not self.controller:
+            log.critical("GDB controller not initialized")
         bp = self.controller.write(
             f"-break-insert {event}",
             wait_for={
@@ -164,8 +173,12 @@ class GDBInjector(InternalInjector):
             },
         )
 
-        assert bp[0]["message"] == "done", "Error setting event"
-        assert not self.is_running()
+        if not bp[0]["message"] == "done":
+            log.critical("Error setting event")
+        if not self.controller:
+            log.critical("GDB controller not initialized")
+        if self.is_running():
+            log.critical("Injector is not running")
 
         self.breakpoints.append(
             self.Breakpoint(
@@ -178,8 +191,10 @@ class GDBInjector(InternalInjector):
     def read_memory(self, address: int) -> int:
         """Access memory at a given address."""
 
-        assert self.controller, "GDB controller not initialized"
-        assert not self.is_running(), "Cannot read memory while process is running"
+        if not self.controller:
+            log.critical("GDB controller not initialized")
+        if self.is_running():
+            log.critical("Cannot read memory while process is running")
 
         r = self.controller.write(
             f"-data-read-memory-bytes {hex(address)} {self.word_size}",
@@ -200,8 +215,10 @@ class GDBInjector(InternalInjector):
     def write_memory(self, address: int, value: int) -> None:
         """Write a value to memory at a given address."""
 
-        assert self.controller, "GDB controller not initialized"
-        assert not self.is_running(), "Cannot write memory while process is running"
+        if not self.controller:
+            log.critical("GDB controller not initialized")
+        if self.is_running():
+            log.critical("Cannot write memory while process is running")
 
         self.controller.write(
             f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, 'little')}",
@@ -215,11 +232,10 @@ class GDBInjector(InternalInjector):
     def read_register(self, register: str) -> int:
         """Read the value of a register."""
 
-        assert self.controller, "GDB controller not initialized"
-        ## TODO: Test if this is true on the board
-        assert not self.is_running() and self.state != self.State.EXIT, (
-            "Cannot read registers while process is running or has exited"
-        )
+        if not self.controller:
+            log.critical("GDB controller not initialized")
+        if self.is_running() and self.state == self.State.EXIT:
+            log.critical("Cannot read registers while process is running or has exited")
 
         r = self.controller.write(
             "-data-list-register-values d",
@@ -230,23 +246,21 @@ class GDBInjector(InternalInjector):
             },
         )[0]
 
-        assert r["message"] == "done", "Error reading register values"
         idx = self.register_names.index(register)
-
         val = r["payload"]["register-values"][idx]
 
-        assert "value" in val, "Vector/Special registers not supported yet!"
+        if "value" in val:
+            log.critical("Vector/Special registers not supported yet!")
 
         return int(val["value"])
 
     def write_register(self, register: str, value: int) -> None:
         """Write a value to a register."""
 
-        assert self.controller, "GDB controller not initialized"
-        ## TODO: Test if this is true on the board
-        assert not self.is_running() and self.state != self.State.EXIT, (
-            "Cannot write registers while process is running or has exited"
-        )
+        if not self.controller:
+            log.critical("GDB controller not initialized")
+        if self.is_running() and self.state == self.State.EXIT:
+            log.critical("Cannot write registers while process is running or has exited")
 
         self.controller.write(
             f'-interpreter-exec console "set ${register}={hex(value)}"',
@@ -259,15 +273,16 @@ class GDBInjector(InternalInjector):
 
     def close(self) -> None:
         """Close the injector."""
-        assert not self.is_running()
-
         self.controller.write("-target-kill")
 
     def run(self, blocking: bool = False) -> str:
         """Run the injector for a given amount of time."""
 
-        assert self.controller, "GDB controller not initialized"
-        assert not self.is_running()
+        if not self.controller:
+            log.critical("GDB controller not initialized")
+
+        if self.is_running():
+            log.warning("Injector is already running")
 
         self.state = self.State.RUNNING
         bp = self.controller.write("-exec-continue")

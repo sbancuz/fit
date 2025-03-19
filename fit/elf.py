@@ -1,12 +1,17 @@
 import lief
 
+import fit.logger
+
+log = fit.logger.get(__name__)
+
 
 class ELF:
     __bin: lief.ELF.Binary
 
     def __init__(self, path: str) -> None:
         self.__bin = lief.parse(path)
-        assert self.__bin is not None
+        if self.__bin is None:
+            log.critical(f"Failed to parse ELF binary at {path}")
 
         self.symbols = ELF.Symbols(self.__bin)
         self.sections = ELF.Sections(self.__bin)

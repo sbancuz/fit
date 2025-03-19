@@ -3,11 +3,14 @@ import time
 from datetime import timedelta
 from typing import Any, Callable, Type, overload
 
+from fit import logger
 from fit.csv import export_to_csv
 from fit.elf import ELF
 from fit.interfaces.implementations import Implementation
 from fit.interfaces.internal_injector import InternalInjector
 from fit.memory import Memory
+
+log = logger.get(__name__)
 
 
 def noop(_: Type["Injector"]) -> None:
@@ -142,15 +145,19 @@ class Injector:
         for key, value in result.items():
             if isinstance(value, list):
                 for val in value:
-                    assert val is not None, f"Value for key {key} is None"
-                    assert not isinstance(val, dict), f"Value for key {key} is a dictionary"
-            else:
-                assert value is not None, f"Value for key {key} is None"
-                assert not isinstance(value, dict), f"Value for key {key} is a dictionary"
+                    if val is None:
+                        log.critical(f"Value for key {key} is None")
 
-        assert self.golden != {} and self.runs != {} and self.golden.keys() == result.keys(), (
-            "Golden run and runs must have the same keys"
-        )
+                    if isinstance(val, dict):
+                        log.critical(f"Value for key {key} is a dictionary")
+            else:
+                if value is not None:
+                    log.critical(f"Value for key {key} is None")
+                if isinstance(value, dict):
+                    log.critical(f"Value for key {key} is a dictionary")
+
+        if not (self.golden != {} and self.runs != {} and self.golden.keys() == result.keys()):
+            log.critical("Golden run and runs must have the same keys")
 
         if golden:
             self.golden = result

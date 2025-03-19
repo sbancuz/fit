@@ -2,12 +2,11 @@ from typing import Any
 
 from pygdbmi.gdbcontroller import GdbController
 
-# import logging
+from fit import logger
+
+log = logger.get(__name__)
 
 gdb_response = list[dict[str, Any]]
-
-# logger = logging.basicConfig(
-# )
 
 
 def check(data: dict[str, Any], wait_for: dict[str, Any]) -> bool:
@@ -49,15 +48,14 @@ class GDBController:
     def write(
         self, command: str, wait_for: dict[str, Any] | None = None, whole_response: bool = False
     ) -> gdb_response:
-        # pprint(f'--> {command}')
-        # logger.debug(f'--> {command}')
+        log.debug(f"--> {command}")
         r: gdb_response = self.controller.write(command, raise_error_on_timeout=False)
 
         if wait_for is not None:
             while True:
                 for msg in r:
                     if "message" in msg and msg["message"] == "error":
-                        print(msg)
+                        log.error(f"Error: {msg['payload']}")
                         return r
 
                     if check(msg, wait_for):
@@ -68,20 +66,19 @@ class GDBController:
 
                 r = self.controller.get_gdb_response(raise_error_on_timeout=False)
 
-        # pprint(f'<-- {r}')
-        # logger.debug(f'<-- {r}')
+        log.debug(f"<-- {r}")
 
         return r
 
     def flush(self) -> None:
         r: gdb_response = self.controller.get_gdb_response(raise_error_on_timeout=False)
+        log.debug(f"<-- {r}")
         if r == []:
             return
 
     def wait_response(self) -> gdb_response:
         r: gdb_response = self.controller.get_gdb_response(raise_error_on_timeout=False)
-        # pprint(f'<-- {r}')
-        # logger.debug(f'<-- {r}')
+        log.debug(f"<-- {r}")
         return r
 
     def exit(self) -> None:
