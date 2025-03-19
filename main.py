@@ -12,7 +12,7 @@ if __name__ == "__main__":
       embeded=False,
    )
 
-   elf = ELF('foo')
+   elf = ELF('configurable_fit/foo')
    addr = elf.symbols['foo'].value
 
    inj.reset()

@@ -140,7 +140,7 @@ class GDBInjector(InternalInjector):
                 '-interpreter-exec console "start"',
                 wait_for={
                     "message": "breakpoint-deleted",
-                    "payload": {"id": "1"},
+                    "payload": {"id": None},
                     "type": "notify",
                 },
             )
