@@ -54,7 +54,29 @@ class Memory:
 
     def __getitem__(self, addr: int | str | slice) -> int | IntList:
         if isinstance(addr, str):
-            start = self.elf.symbols[addr].value
+            """
+            Support gdb-style symbols
+            """
+
+            location = addr
+            offset = 0
+            if location.count("+") == 1:
+                location, off = location.split("+")
+
+                if off.startswith("0x"):
+                    offset = int(off, 16)
+                else:
+                    offset = int(off)
+
+            elif location.count("-") == 1:
+                location, off = location.split("-")
+
+                if off.startswith("0x"):
+                    offset = -int(off, 16)
+                else:
+                    offset = -int(off)
+
+            start = self.elf.symbols[location].value + offset
             step = self.word_size
             end = start + step
         elif isinstance(addr, int):
@@ -94,7 +116,29 @@ class Memory:
 
     def __setitem__(self, addr: int | str | slice, value: int | list[int] | IntList) -> None:
         if isinstance(addr, str):
-            start = self.elf.symbols[addr].value
+            """
+            Support gdb-style symbols
+            """
+
+            location = addr
+            offset = 0
+            if location.count("+") == 1:
+                location, off = location.split("+")
+
+                if off.startswith("0x"):
+                    offset = int(off, 16)
+                else:
+                    offset = int(off)
+
+            elif location.count("-") == 1:
+                location, off = location.split("-")
+
+                if off.startswith("0x"):
+                    offset = -int(off, 16)
+                else:
+                    offset = -int(off)
+
+            start = self.elf.symbols[location].value + offset
             step = self.word_size
             end = start + step
         elif isinstance(addr, int):
