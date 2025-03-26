@@ -151,12 +151,12 @@ class Injector:
                     if isinstance(val, dict):
                         log.critical(f"Value for key {key} is a dictionary")
             else:
-                if value is not None:
+                if value is None:
                     log.critical(f"Value for key {key} is None")
                 if isinstance(value, dict):
                     log.critical(f"Value for key {key} is a dictionary")
 
-        if not (self.golden != {} and self.runs != {} and self.golden.keys() == result.keys()):
+        if self.golden != {} and self.runs != {} and self.golden.keys() != result.keys():
             log.critical("Golden run and runs must have the same keys")
 
         if golden:

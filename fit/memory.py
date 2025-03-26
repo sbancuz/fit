@@ -1,8 +1,11 @@
-from typing import overload
+from typing import Type, Union, overload
 
+from fit import logger
 from fit.elf import ELF
 from fit.interfaces.internal_injector import InternalInjector
 from fit.mapping import Mapping
+
+log = logger.get(__name__)
 
 
 class IntList(list[int]):
@@ -11,14 +14,41 @@ class IntList(list[int]):
     They are defined as element-wise operations.
     """
 
-    def __or__(self, other: int) -> list[int]:
-        return list([x | other for x in self])
+    def __or__(self, other: Union[int, "IntList"]) -> list[int]:
+        if isinstance(other, int):
+            return list([x | other for x in self])
+        elif isinstance(other, IntList):
+            if len(other) != len(self):
+                log.critical("IntList must have the same length")
 
-    def __xor__(self, other: int) -> list[int]:
-        return list([x ^ other for x in self])
+            return [x | y for x, y in zip(self, other)]
 
-    def __and__(self, other: int) -> list[int]:
-        return list([x & other for x in self])
+    def __ror__(self, other: int) -> list[int]:
+        return list([other | x for x in self])
+
+    def __xor__(self, other: Union[int, "IntList"]) -> list[int]:
+        if isinstance(other, int):
+            return list([x ^ other for x in self])
+        elif isinstance(other, IntList):
+            if len(other) != len(self):
+                log.critical("IntList must have the same length")
+
+            return [x ^ y for x, y in zip(self, other)]
+
+    def __rxor__(self, other: int) -> list[int]:
+        return list([other ^ x for x in self])
+
+    def __and__(self, other: Union[int, "IntList"]) -> list[int]:
+        if isinstance(other, int):
+            return list([x & other for x in self])
+        elif isinstance(other, IntList):
+            if len(other) != len(self):
+                log.critical("IntList must have the same length")
+
+            return [x & y for x, y in zip(self, other)]
+
+    def __rand__(self, other: int) -> list[int]:
+        return list([other & x for x in self])
 
     def __lshift__(self, other: int) -> list[int]:
         return list([x << other for x in self])
@@ -43,14 +73,14 @@ class Memory:
         self.elf = elf
         self.word_size = self.elf.bits // 8
 
-    @overload
-    def __getitem__(self, addr: int) -> int: ...
+    # @overload
+    # def __getitem__(self, addr: int) -> int: ...
 
-    @overload
-    def __getitem__(self, addr: str) -> int: ...
+    # @overload
+    # def __getitem__(self, addr: str) -> int: ...
 
-    @overload
-    def __getitem__(self, addr: slice) -> IntList: ...
+    # @overload
+    # def __getitem__(self, addr: slice) -> IntList: ...
 
     def __getitem__(self, addr: int | str | slice) -> int | IntList:
         if isinstance(addr, str):
@@ -102,17 +132,17 @@ class Memory:
             ]
         )
 
-    @overload
-    def __setitem__(self, addr: int, value: int) -> None: ...
+    # @overload
+    # def __setitem__(self, addr: int, value: int) -> None: ...
 
-    @overload
-    def __setitem__(self, addr: str, value: int) -> None: ...
+    # @overload
+    # def __setitem__(self, addr: str, value: int) -> None: ...
 
-    @overload
-    def __setitem__(self, addr: slice, value: int) -> None: ...
+    # @overload
+    # def __setitem__(self, addr: slice[int, int, int], value: int) -> None: ...
 
-    @overload
-    def __setitem__(self, addr: slice, value: list[int] | IntList) -> None: ...
+    # @overload
+    # def __setitem__(self, addr: slice[int, int, int], value: list[int] | IntList) -> None: ...
 
     def __setitem__(self, addr: int | str | slice, value: int | list[int] | IntList) -> None:
         if isinstance(addr, str):

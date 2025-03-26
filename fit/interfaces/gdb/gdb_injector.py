@@ -106,9 +106,10 @@ class GDBInjector(InternalInjector):
 
     def reset(self) -> None:
         self.controller.write("-break-delete")
-        self.controller.write("-target-reset")
 
         if self.embedded:
+            self.controller.write("-target-reset")
+
             """
                 Perform a hard reset on the target. This calls the monitor command `jtag_reset` in the st-util gdb server. Then, since the target is in a reset state, we wait for the DHCSR register to indicate that the target is in a reset state. If the target is not in a reset state, we wait for 0.5 seconds and check again.
                 The library cannot do this on its own because it can't access the usb device directly since it's already occupied by _this_ gdb server.
