@@ -1,5 +1,6 @@
 import concurrent.futures
 import time
+from collections import defaultdict
 from datetime import timedelta
 from typing import Any, Callable, Type, overload
 
@@ -80,6 +81,7 @@ class Injector:
 
         self.regs = Registers(self.__internal_injector, self.binary)
         self.memory = Memory(self.__internal_injector, self.binary)
+        self.runs = defaultdict(list)
 
     def reset(self) -> None:
         self.__internal_injector.reset()
@@ -163,6 +165,7 @@ class Injector:
             self.golden = result
         else:
             for key, value in result.items():
+                print(f"{type(key)}: {value}")
                 self.runs[key].append(value)
 
     ## TODO: Make a way better reporting function

@@ -214,7 +214,6 @@ if __name__ == "__main__":
         """
         Look at the memory and registers
         """
-        #TODO: error here!!!!!
         inj.add_run(
             {
                 **{variable: inj.memory[variable] for variable in injector_variables},
