@@ -83,7 +83,7 @@ if __name__ == "__main__":
     Set-up
     """
     inj.reset()
-    inj.set_result_condition("end")
+    inj.set_result_condition("win")
     inj.run()
 
     """
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         Setup procedure
         """
         inj.reset()
-        inj.set_result_condition("end")
+        inj.set_result_condition("win")
         inj.set_result_condition("foo")
 
         def injection_function(inj: Injector) -> None:
@@ -214,6 +214,7 @@ if __name__ == "__main__":
         """
         Look at the memory and registers
         """
+        #TODO: error here!!!!!
         inj.add_run(
             {
                 **{variable: inj.memory[variable] for variable in injector_variables},
