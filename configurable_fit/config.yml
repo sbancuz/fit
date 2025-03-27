@@ -7,12 +7,40 @@ configuration:
 
   number_of_runs: 1
   timeout_interval: #in seconds
-    - min: 10
-    - max: 20
+    min: 59
+    max: 60
   injection_delay: #in seconds
-    - min: 5
-    - max: 10
+    min: 5
+    max: 10
   injection_function: "fault_injection_handler"
 
 
 injector: "example_csv.csv"
+
+
+
+
+#configuration:
+#  executable: "foo"
+#  experiment_name: "experiment"
+#  golder_result_condition: "win"
+#  result_condition: [
+#    "foo"
+#  ]
+#
+#  gdb:
+#    - gdb_path: "gdb"
+#    - remote: true #localhost:1234 or empty
+#    - embedded: false
+#
+#  number_of_runs: 1
+#  timeout_interval: #in seconds
+#    min: 10
+#    max: 20
+#  injection_delay: #in seconds
+#    min: 5
+#    max: 10
+#  injection_function: "fault_injection_handler"
+#
+#
+#injector: "example_csv.csv"

@@ -83,19 +83,19 @@ if __name__ == "__main__":
     Set-up
     """
     inj.reset()
-    inj.set_result_condition("win")
+    inj.set_result_condition("end")
     inj.run()
 
     """
     Golden run
     """
-    print(inj.memory["test"])
+    # print(inj.memory["test"])
     golden_run = {
         **{variable: inj.memory[variable] for variable in injector_variables},
         **{register: inj.regs[register] for register in injector_registers},
         **{memory: inj.memory[memory] for memory in injector_memories},
     }
-    print(golden_run)
+    print(list(golden_run.keys())[0])
     inj.add_run(golden_run, True)
 
     """
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         Setup procedure
         """
         inj.reset()
-        inj.set_result_condition("win")
+        inj.set_result_condition("end")
         inj.set_result_condition("foo")
 
         def injection_function(inj: Injector) -> None:
@@ -197,14 +197,12 @@ if __name__ == "__main__":
             inj.run(
                 timeout=timedelta(
                     seconds=random.randint(
-                        ## TODO: Sistemare
                         int(config["configuration"]["timeout_interval"]["min"]),
                         int(config["configuration"]["timeout_interval"]["max"]),
                     )
                 ),
                 injection_delay=timedelta(
                     seconds=random.randint(
-                        ## TODO: Sistemare
                         int(config["configuration"]["injection_delay"]["min"]),
                         int(config["configuration"]["injection_delay"]["max"]),
                     )
