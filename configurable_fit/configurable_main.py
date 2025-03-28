@@ -50,6 +50,9 @@ if __name__ == "__main__":
 
             injector_data[where][operation]["values"].append(entry)
 
+    print(("localhost:1234" if not config["configuration"]["gdb"]["remote"] else config["configuration"]["gdb"]["remote"]))
+
+
     # Executable
     executable = config["configuration"]["executable"]
     # ELF
@@ -58,9 +61,9 @@ if __name__ == "__main__":
     # Injector
     inj = Injector(
         bin=executable,
-        gdb_path=config["configuration"]["gdb_path"],
-        remote="localhost:1234" if config["configuration"]["remote"] else None,
-        embedded=config["configuration"]["embedded"],
+        gdb_path=config["configuration"]["gdb"]["gdb_path"],
+        remote="localhost:1234" if not config["configuration"]["gdb"]["remote"] else config["configuration"]["gdb"]["remote"],
+        embedded=config["configuration"]["gdb"]["embedded"],
     )
 
     # Variables to inject
@@ -83,7 +86,7 @@ if __name__ == "__main__":
     Set-up
     """
     inj.reset()
-    inj.set_result_condition("win")
+    inj.set_result_condition(config["configuration"]["golden_result_condition"])
     inj.run()
 
     """
@@ -107,8 +110,9 @@ if __name__ == "__main__":
         Setup procedure
         """
         inj.reset()
-        inj.set_result_condition("win")
-        inj.set_result_condition("foo")
+        inj.set_result_condition(config["configuration"]["golden_result_condition"])
+        for condition in config["configuration"]["result_condition"]:
+            inj.set_result_condition(condition)
 
         def injection_function(inj: Injector) -> None:
             """
