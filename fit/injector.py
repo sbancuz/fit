@@ -9,7 +9,7 @@ from fit.csv import export_to_csv
 from fit.elf import ELF
 from fit.interfaces.implementations import Implementation
 from fit.interfaces.internal_injector import InternalInjector
-from fit.memory import Memory
+from fit.memory import IntList, Memory
 
 log = logger.get(__name__)
 
@@ -33,15 +33,23 @@ class Registers:
 
     def __getitem__(self, name: str) -> int:
         if name.lower() not in self.registers:
-            raise ValueError(f"Register {name} not found")
+            log.critical(f"Register {name} not found")
 
         return self.__internal_injector.read_register(name)
 
-    def __setitem__(self, name: str, value: int) -> None:
+    def __setitem__(self, name: str, value: int | list[int] | IntList) -> None:
         if name not in self.registers:
-            raise ValueError(f"Register {name} not found")
+            log.critical(f"Register {name} not found")
 
-        self.__internal_injector.write_register(name, value)
+        if isinstance(value, IntList) or isinstance(value, list):
+            if len(value) > 1:
+                log.critical(f"Register {name} is not an array")
+
+            v = value[0]
+        elif isinstance(value, int):
+            v = value
+
+        self.__internal_injector.write_register(name, v)
 
 
 class Injector:

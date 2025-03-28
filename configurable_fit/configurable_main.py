@@ -50,8 +50,13 @@ if __name__ == "__main__":
 
             injector_data[where][operation]["values"].append(entry)
 
-    print(("localhost:1234" if not config["configuration"]["gdb"]["remote"] else config["configuration"]["gdb"]["remote"]))
-
+    print(
+        (
+            "localhost:1234"
+            if not config["configuration"]["gdb"]["remote"]
+            else config["configuration"]["gdb"]["remote"]
+        )
+    )
 
     # Executable
     executable = config["configuration"]["executable"]
@@ -62,7 +67,11 @@ if __name__ == "__main__":
     inj = Injector(
         bin=executable,
         gdb_path=config["configuration"]["gdb"]["gdb_path"],
-        remote="localhost:1234" if not config["configuration"]["gdb"]["remote"] else config["configuration"]["gdb"]["remote"],
+        remote=(
+            "localhost:1234"
+            if not config["configuration"]["gdb"]["remote"]
+            else config["configuration"]["gdb"]["remote"]
+        ),
         embedded=config["configuration"]["gdb"]["embedded"],
     )
 
@@ -184,15 +193,15 @@ if __name__ == "__main__":
 
             elif where in injector_registers:
                 if operation == "xor":
-                    inj.memory[where] ^= gen.random()
+                    inj.regs[where] ^= gen.random()
                 elif operation == "and":
-                    inj.memory[where] &= gen.random()
+                    inj.regs[where] &= gen.random()
                 elif operation == "or":
-                    inj.memory[where] |= gen.random()
+                    inj.regs[where] |= gen.random()
                 elif operation == "zero":
-                    inj.memory[where] = 0
+                    inj.regs[where] = 0
                 elif operation == "value":
-                    inj.memory[where] = gen.random()
+                    inj.regs[where] = gen.random()
             else:
                 log.critical("Invalid target for injection")
 
