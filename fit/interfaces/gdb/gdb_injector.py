@@ -299,7 +299,8 @@ class GDBInjector(InternalInjector):
                     return "exit"
 
                 for b in self.breakpoints:
-                    if b.id == int(msg["payload"]["bkptno"]):
+                    # int(msg["payload"]["bkptno"]
+                    if b.id == int(msg["payload"].get("bkptno")):
                         self.state = self.State.INTERRUPT
 
                         return b.name

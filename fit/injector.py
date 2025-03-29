@@ -75,6 +75,8 @@ class Injector:
 
     runs: dict[str, list[Any]] = {}
 
+    result_run: list[Any] = []
+
     def __init__(
         self,
         bin: str,
@@ -188,10 +190,11 @@ class Injector:
                 print(f"{key} ({i}): {run}")
 
     def save(self, path: str) -> None:
+        path = path.split(".csv")[0] + ".csv"
         golden_path = path.split(".csv")[0] + "_golden.csv"
 
         if self.golden != {}:
-            export_to_csv(golden_path, self.golden)
+            export_to_csv(golden_path, self.golden, [])
 
         if self.runs != {}:
-            export_to_csv(path, self.runs)
+            export_to_csv(path, self.runs, self.result_run)

@@ -5,7 +5,7 @@ configuration:
   result_condition: [
     "foo",
     "main"]
-  number_of_runs: 1
+  number_of_runs: 3
 
   gdb:
     gdb_path: "gdb"

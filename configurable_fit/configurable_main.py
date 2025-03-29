@@ -206,7 +206,7 @@ if __name__ == "__main__":
                 log.critical("Invalid target for injection")
 
         ## TODO: Tenere traccia degli eventi lanciati
-        print(
+        result = (
             inj.run(
                 timeout=timedelta(
                     seconds=random.randint(
@@ -223,6 +223,10 @@ if __name__ == "__main__":
                 inject_func=injection_function,
             )
         )
+
+
+        inj.result_run.append(result)
+        print(f"ciaoooooooo {inj.result_run}")
 
         """
         Look at the memory and registers
