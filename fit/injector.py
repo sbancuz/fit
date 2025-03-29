@@ -175,7 +175,6 @@ class Injector:
             self.golden = result
         else:
             for key, value in result.items():
-                print(f"{type(key)}: {value}")
                 self.runs[key].append(value)
 
     ## TODO: Make a way better reporting function

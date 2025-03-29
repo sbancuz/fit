@@ -5,6 +5,9 @@ import random
 import csv
 from datetime import timedelta
 from collections import defaultdict
+from tqdm import tqdm
+import time
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -17,7 +20,36 @@ from fit import logger
 log = logger.get(__name__)
 
 
+def timed_progress_bar(obj, duration=None):
+    """ Mostra una barra di avanzamento basata sul tempo di esecuzione di una funzione
+        o su una stima per oggetti non callable.
+
+        - Se obj è una funzione, misura il tempo reale di esecuzione.
+        - Se obj è un oggetto non callable, simula un'attesa proporzionale alla sua 'dimensione'.
+    """
+
+    # Se obj è callable (una funzione), misuriamo il tempo reale
+    if callable(obj):
+        start = time.time()
+        obj()  # Esegui la funzione
+        duration = time.time() - start  # Calcola il tempo effettivo
+    else:
+        # Se obj NON è callable, stimiamo una durata fittizia
+        if duration is None:
+            duration = len(str(obj))  # Tempo basato sulla lunghezza dell'oggetto
+
+        start = time.time()
+        with tqdm(total=duration, desc="Esecuzione", bar_format="{l_bar}{bar} {n_fmt}/{total_fmt} sec") as pbar:
+            while (elapsed := time.time() - start) < duration:
+                pbar.update(elapsed - pbar.n)
+                time.sleep(0.1)
+            pbar.update(duration - pbar.n)  # Completa la barra
+
+
 if __name__ == "__main__":
+    print(f"**********************\n"
+          f"* READ CONFIGURATION *\n"
+          f"**********************\n")
     # Configuration file
     config_file = "config.yml"
 
@@ -49,14 +81,6 @@ if __name__ == "__main__":
                 injector_data[where][operation]["values"] = []
 
             injector_data[where][operation]["values"].append(entry)
-
-    print(
-        (
-            "localhost:1234"
-            if not config["configuration"]["gdb"]["remote"]
-            else config["configuration"]["gdb"]["remote"]
-        )
-    )
 
     # Executable
     executable = config["configuration"]["executable"]
@@ -90,7 +114,10 @@ if __name__ == "__main__":
         else:
             injector_variables.append(element)
 
-    print("GOLDEN")
+    print(f"\n\n\n"
+          f"**************\n"
+          f"* GOLDEN RUN *\n"
+          f"**************\n")
     """
     Set-up
     """
@@ -101,20 +128,24 @@ if __name__ == "__main__":
     """
     Golden run
     """
-    # print(inj.memory["test"])
     golden_run = {
         **{variable: inj.memory[variable] for variable in injector_variables},
         **{register: inj.regs[register] for register in injector_registers},
         **{memory: inj.memory[memory] for memory in injector_memories},
     }
-    print(list(golden_run.keys())[0])
     inj.add_run(golden_run, True)
 
+    print(f"\n\n\n"
+          f"*****************\n"
+          f"* INJECTED RUNS *\n"
+          f"*****************\n"
+          f"\n")
     """
     Runs
     """
     runs = []
     for i in range(config["configuration"]["number_of_runs"]):
+        print(f"!! {i + 1}")
         """
         Setup procedure
         """
@@ -205,7 +236,6 @@ if __name__ == "__main__":
             else:
                 log.critical("Invalid target for injection")
 
-        ## TODO: Tenere traccia degli eventi lanciati
         result = (
             inj.run(
                 timeout=timedelta(
@@ -224,9 +254,8 @@ if __name__ == "__main__":
             )
         )
 
-
+        print(f"{' ' * (len(str(abs(i + 1))) + len("!! "))}RUN RESULT {result}\n")
         inj.result_run.append(result)
-        print(f"ciaoooooooo {inj.result_run}")
 
         """
         Look at the memory and registers
@@ -239,6 +268,10 @@ if __name__ == "__main__":
             }
         )
 
+    print(f"\n\n\n"
+          f"***************\n"
+          f"* SAVE RESULT *\n"
+          f"***************\n")
     """
     Save the data in CSV file
     """

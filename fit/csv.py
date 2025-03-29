@@ -19,10 +19,6 @@ def import_from_csv(file_path: str) -> dict[str, Any]:
     return result
 
 
-import csv
-from typing import Any
-
-
 def export_to_csv(file_path: str, data: dict[str, Any], result: list[Any]) -> None:
     """
     Saves a dictionary to a CSV file.

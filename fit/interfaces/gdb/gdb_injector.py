@@ -290,19 +290,32 @@ class GDBInjector(InternalInjector):
 
         while self.state == self.State.RUNNING:
             for msg in bp:
+                # print(f"{msg} \n")
                 if msg["message"] != "stopped":
                     continue
 
                 if "reason" in msg["payload"] and msg["payload"]["reason"] == "exited-normally":
                     self.state = self.State.EXIT
-
                     return "exit"
 
-                for b in self.breakpoints:
-                    # int(msg["payload"]["bkptno"]
-                    if b.id == int(msg["payload"].get("bkptno")):
-                        self.state = self.State.INTERRUPT
+                if (
+                    "reason" in msg["payload"]
+                    and msg["payload"]["reason"] == "signal-received"
+                    and msg["payload"]["signal-meaning"] == "Interrupt"
+                ):
+                    # self.state = self.State.INTERRUPT
+                    # TODO ogni tanto viene tirato un interrupt SIGINT
+                    print(f"INTERRUPTTTTTTTTTT")
+                    # print(bp)
+                    # print("\n\n\n\n\n\n")
+                    # self.interrupt()
+                    # return "interrupt"
 
+                for b in self.breakpoints:
+                    # print(f"PAYLOAD: {msg["payload"]}")
+                    # print("bkptno" not in msg["payload"])
+                    if b.id == int(msg["payload"]["bkptno"]):
+                        self.state = self.State.INTERRUPT
                         return b.name
 
             if not blocking:
@@ -311,7 +324,7 @@ class GDBInjector(InternalInjector):
             bp = self.controller.wait_response()
 
         self.state = self.State.EXIT
-        return "unknown"
+        return "unknown"  # TODO self.events[event].callback(self, **self.events[event].kwargs) --> come si comporta con (KeyError: 'unknown')
 
     def get_register_names(self) -> list[str]:
         return self.register_names
