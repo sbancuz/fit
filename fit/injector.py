@@ -128,7 +128,7 @@ class Injector:
             TODO: Maybe we should return the event instead of 'unknown'? Should this be an error?
             """
             if event != "unknown":
-                print("Event triggered before injection")
+                log.error("Event triggered before injection")
                 return event
 
             time.sleep(injection_delay.total_seconds())

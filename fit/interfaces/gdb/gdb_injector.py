@@ -274,7 +274,7 @@ class GDBInjector(InternalInjector):
 
     def close(self) -> None:
         """Close the injector."""
-        self.controller.write("-target-kill")
+        self.controller.exit()
 
     def run(self, blocking: bool = False) -> str:
         """Run the injector for a given amount of time."""
@@ -286,7 +286,13 @@ class GDBInjector(InternalInjector):
             log.warning("Injector is already running")
 
         self.state = self.State.RUNNING
-        bp = self.controller.write("-exec-continue")
+        bp = self.controller.write(
+            "-exec-continue",
+            wait_for=[
+                {"type": "result", "message": "running", "payload": None},
+                {"type": "notify", "message": "breakpoint-modified", "payload": None},
+            ],
+        )
 
         while self.state == self.State.RUNNING:
             for msg in bp:
@@ -330,7 +336,27 @@ class GDBInjector(InternalInjector):
         return self.register_names
 
     def interrupt(self) -> None:
-        self.controller.write("-exec-interrupt --all")
+        # if not self.is_running():
+        #     log.critical(f"Injector is not running: current {self.state}")
+
+        self.state = self.State.INTERRUPT
+        self.controller.write(
+            "-exec-interrupt --all",
+            wait_for={
+                "type": "notify",
+                "message": "stopped",
+                "payload": {
+                    "reason": "signal-received",
+                    "signal-name": "SIGINT",
+                    "signal-meaning": "Interrupt",
+                    "frame": {},
+                    "thread-id": None,
+                },
+                "token": None,
+                "stream": "stdout",
+            },
+        )
+
         self.state = self.State.INTERRUPT
 
     def get_mappings(self) -> list[Mapping]:

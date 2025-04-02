@@ -1,3 +1,5 @@
+import logging
+from asyncio import wait_for
 from typing import Any
 
 from pygdbmi.gdbcontroller import GdbController
@@ -5,7 +7,7 @@ from pygdbmi.gdbcontroller import GdbController
 from fit import logger
 
 log = logger.get(__name__)
-
+log.setLevel(logging.DEBUG)
 gdb_response = list[dict[str, Any]]
 
 
@@ -46,23 +48,33 @@ class GDBController:
         self.controller = GdbController(command=command)
 
     def write(
-        self, command: str, wait_for: dict[str, Any] | None = None, whole_response: bool = False
+        self,
+        command: str,
+        wait_for: list[dict[str, Any]] | dict[str, Any] | None = None,
+        whole_response: bool = False,
     ) -> gdb_response:
+        if isinstance(wait_for, dict):
+            wait = [wait_for]
+        else:
+            wait = wait_for if wait_for is not None else []
+
         log.debug(f"--> {command}")
         r: gdb_response = self.controller.write(command, raise_error_on_timeout=False)
 
-        if wait_for is not None:
+        if wait is not None:
             while True:
+                log.debug(f"<-- {r}")
                 for msg in r:
                     if "message" in msg and msg["message"] == "error":
                         log.error(f"Error: {msg['payload']}")
                         return r
 
-                    if check(msg, wait_for):
-                        if whole_response:
-                            return r
+                    for w in wait:
+                        if check(msg, w):
+                            if whole_response:
+                                return r
 
-                        return [msg]
+                            return [msg]
 
                 r = self.controller.get_gdb_response(raise_error_on_timeout=False)
 
