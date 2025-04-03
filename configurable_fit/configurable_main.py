@@ -8,7 +8,8 @@ from collections import defaultdict
 from tqdm import tqdm
 import time
 import logging
-
+import click
+from typing import Any, Literal
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -50,13 +51,44 @@ def timed_progress_bar(obj, duration=None):
             pbar.update(duration - pbar.n)  # Completa la barra
 
 
-if __name__ == "__main__":
+def click_option(*args: Any, **kwargs: Any) -> Any:
+    if "show_default" not in kwargs:
+        kwargs.update({"show_default": True})
+    return click.option(*args, **kwargs)
+
+
+@click.command()
+@click_option(
+    "-c",
+    "--config-file",
+    required=True,
+    type=click.Path(exists=True, resolve_path=True, dir_okay=False),
+    help="The path to the .yml configuration",
+)
+@click_option(
+    "-r",
+    "--remote",
+    type=str,
+    default=None,
+    help="Override of the remote",
+)
+@click_option(
+    "--log-level",
+    default="info",
+    type=click.Choice(
+        ["info", "warning", "error", "debug"],
+        case_sensitive=False,
+    ),
+)
+def main(
+    config_file: str,
+    remote: str | None,
+    log_level: Literal["info", "warning", "error", "debug"],
+):
+    log.setLevel(str(log_level).upper())
+
     print(f"**********************\n" f"* READ CONFIGURATION *\n" f"**********************\n")
     # Configuration file
-    config_file = "config.yml"
-
-    if len(sys.argv) == 2:
-        config_file = sys.argv[1]
 
     # Configuration data reads from yaml
     with open(config_file, "r") as yml_file:
@@ -86,18 +118,19 @@ if __name__ == "__main__":
 
     # Executable
     executable = config["configuration"]["executable"]
-    # ELF
-    elf = ELF(executable)
+
+    if remote is None:
+        remote = (
+            "localhost:1234"
+            if not config["configuration"]["gdb"]["remote"]
+            else config["configuration"]["gdb"]["remote"]
+        )
 
     # Injector
     inj = Injector(
         bin=executable,
         gdb_path=config["configuration"]["gdb"]["gdb_path"],
-        remote=(
-            "localhost:1234"
-            if not config["configuration"]["gdb"]["remote"]
-            else config["configuration"]["gdb"]["remote"]
-        ),
+        remote=remote,
         embedded=config["configuration"]["gdb"]["embedded"],
     )
 
@@ -267,3 +300,7 @@ if __name__ == "__main__":
     """
     inj.save(config["configuration"]["experiment_name"])
     inj.close()
+
+
+if __name__ == "__main__":
+    main()
