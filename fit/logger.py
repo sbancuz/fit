@@ -1,5 +1,5 @@
 import logging
-from typing import Any, override
+from typing import Any
 
 
 class Logger(logging.Logger):
@@ -49,6 +49,6 @@ class Logger(logging.Logger):
         raise SystemExit(1)
 
 
-def get(name: str) -> logging.Logger:
+def get() -> logging.Logger:
     logging.setLoggerClass(Logger)
-    return logging.getLogger(name)
+    return logging.getLogger("fit")

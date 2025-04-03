@@ -7,6 +7,7 @@ from datetime import timedelta
 from collections import defaultdict
 from tqdm import tqdm
 import time
+import logging
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -17,15 +18,16 @@ from fit.stencil import Stencil
 from fit.distribution import Fixed
 from fit import logger
 
-log = logger.get(__name__)
+log = logger.get()
+# log.setLevel(logging.DEBUG)
 
 
 def timed_progress_bar(obj, duration=None):
-    """ Mostra una barra di avanzamento basata sul tempo di esecuzione di una funzione
-        o su una stima per oggetti non callable.
+    """Mostra una barra di avanzamento basata sul tempo di esecuzione di una funzione
+    o su una stima per oggetti non callable.
 
-        - Se obj è una funzione, misura il tempo reale di esecuzione.
-        - Se obj è un oggetto non callable, simula un'attesa proporzionale alla sua 'dimensione'.
+    - Se obj è una funzione, misura il tempo reale di esecuzione.
+    - Se obj è un oggetto non callable, simula un'attesa proporzionale alla sua 'dimensione'.
     """
 
     # Se obj è callable (una funzione), misuriamo il tempo reale

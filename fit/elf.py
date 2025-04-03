@@ -2,7 +2,7 @@ import lief
 
 import fit.logger
 
-log = fit.logger.get(__name__)
+log = fit.logger.get()
 
 
 class ELF:

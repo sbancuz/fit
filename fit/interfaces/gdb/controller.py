@@ -1,13 +1,11 @@
 import logging
-from asyncio import wait_for
 from typing import Any
 
 from pygdbmi.gdbcontroller import GdbController
 
 from fit import logger
 
-log = logger.get(__name__)
-log.setLevel(logging.DEBUG)
+log = logger.get()
 gdb_response = list[dict[str, Any]]
 
 

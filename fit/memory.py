@@ -1,11 +1,11 @@
-from typing import Type, Union, overload
+from typing import Union
 
 from fit import logger
 from fit.elf import ELF
 from fit.interfaces.internal_injector import InternalInjector
 from fit.mapping import Mapping
 
-log = logger.get(__name__)
+log = logger.get()
 
 
 class IntList(list[int]):

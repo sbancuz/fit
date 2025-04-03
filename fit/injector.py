@@ -11,7 +11,7 @@ from fit.interfaces.implementations import Implementation
 from fit.interfaces.internal_injector import InternalInjector
 from fit.memory import IntList, Memory
 
-log = logger.get(__name__)
+log = logger.get()
 
 
 def noop(_: Type["Injector"]) -> None:

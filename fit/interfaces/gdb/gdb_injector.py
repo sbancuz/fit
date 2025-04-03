@@ -8,7 +8,7 @@ from fit.interfaces.gdb.controller import GDBController, gdb_response
 from fit.interfaces.internal_injector import InternalInjector
 from fit.mapping import Mapping
 
-log = logger.get(__name__)
+log = logger.get()
 
 GDB_FLAGS = ["-q", "--nx", "--interpreter=mi3"]
 
