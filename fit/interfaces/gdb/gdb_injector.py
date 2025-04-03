@@ -286,17 +286,24 @@ class GDBInjector(InternalInjector):
             log.warning("Injector is already running")
 
         self.state = self.State.RUNNING
+
+        to_await: list[dict[str, Any]] = [
+            {"type": "result", "message": "running", "payload": None},
+            {
+                "type": "notify",
+                "message": "stopped",
+                "payload": {"reason": "breakpoint-hit", "bkptno": None},
+            },
+        ]
+
         bp = self.controller.write(
             "-exec-continue",
-            wait_for=[
-                {"type": "result", "message": "running", "payload": None},
-                {"type": "notify", "message": "breakpoint-modified", "payload": None},
-            ],
+            wait_for=to_await,
+            whole_response=True,
         )
 
         while self.state == self.State.RUNNING:
             for msg in bp:
-                # print(f"{msg} \n")
                 if msg["message"] != "stopped":
                     continue
 
@@ -304,22 +311,7 @@ class GDBInjector(InternalInjector):
                     self.state = self.State.EXIT
                     return "exit"
 
-                if (
-                    "reason" in msg["payload"]
-                    and msg["payload"]["reason"] == "signal-received"
-                    and msg["payload"]["signal-meaning"] == "Interrupt"
-                ):
-                    # self.state = self.State.INTERRUPT
-                    # TODO ogni tanto viene tirato un interrupt SIGINT
-                    print(f"INTERRUPTTTTTTTTTT")
-                    # print(bp)
-                    # print("\n\n\n\n\n\n")
-                    # self.interrupt()
-                    # return "interrupt"
-
                 for b in self.breakpoints:
-                    # print(f"PAYLOAD: {msg["payload"]}")
-                    # print("bkptno" not in msg["payload"])
                     if b.id == int(msg["payload"]["bkptno"]):
                         self.state = self.State.INTERRUPT
                         return b.name
@@ -327,37 +319,47 @@ class GDBInjector(InternalInjector):
             if not blocking:
                 break
 
-            bp = self.controller.wait_response()
+            bp = self.controller.wait_response(wait_for=to_await, whole_response=True)
 
         self.state = self.State.EXIT
-        return "unknown"  # TODO self.events[event].callback(self, **self.events[event].kwargs) --> come si comporta con (KeyError: 'unknown')
+        return "unknown"
 
     def get_register_names(self) -> list[str]:
         return self.register_names
 
-    def interrupt(self) -> None:
-        # if not self.is_running():
-        #     log.critical(f"Injector is not running: current {self.state}")
-
+    def interrupt(self) -> str | None:
         self.state = self.State.INTERRUPT
-        self.controller.write(
+        r = self.controller.write(
             "-exec-interrupt --all",
-            wait_for={
-                "type": "notify",
-                "message": "stopped",
-                "payload": {
-                    "reason": "signal-received",
-                    "signal-name": "SIGINT",
-                    "signal-meaning": "Interrupt",
-                    "frame": {},
-                    "thread-id": None,
+            wait_for=[
+                {
+                    "type": "notify",
+                    "message": "stopped",
+                    "payload": {
+                        "reason": "signal-received",
+                        "signal-name": "SIGINT",
+                        "signal-meaning": "Interrupt",
+                        "frame": {},
+                        "thread-id": None,
+                    },
                 },
-                "token": None,
-                "stream": "stdout",
-            },
+                {
+                    "type": "notify",
+                    "message": "stopped",
+                    "payload": {"reason": "breakpoint-hit", "bkptno": None},
+                },
+            ],
         )
 
         self.state = self.State.INTERRUPT
+
+        if r[0]["message"] == "stopped" and r[0]["payload"]["reason"] == "breakpoint-hit":
+            for b in self.breakpoints:
+                if b.id == int(r[0]["payload"]["bkptno"]):
+                    self.state = self.State.INTERRUPT
+                    return b.name
+
+        return None
 
     def get_mappings(self) -> list[Mapping]:
         self.controller.flush()

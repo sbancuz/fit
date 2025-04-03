@@ -39,7 +39,9 @@ def timed_progress_bar(obj, duration=None):
             duration = len(str(obj))  # Tempo basato sulla lunghezza dell'oggetto
 
         start = time.time()
-        with tqdm(total=duration, desc="Esecuzione", bar_format="{l_bar}{bar} {n_fmt}/{total_fmt} sec") as pbar:
+        with tqdm(
+            total=duration, desc="Esecuzione", bar_format="{l_bar}{bar} {n_fmt}/{total_fmt} sec"
+        ) as pbar:
             while (elapsed := time.time() - start) < duration:
                 pbar.update(elapsed - pbar.n)
                 time.sleep(0.1)
@@ -47,9 +49,7 @@ def timed_progress_bar(obj, duration=None):
 
 
 if __name__ == "__main__":
-    print(f"**********************\n"
-          f"* READ CONFIGURATION *\n"
-          f"**********************\n")
+    print(f"**********************\n" f"* READ CONFIGURATION *\n" f"**********************\n")
     # Configuration file
     config_file = "config.yml"
 
@@ -114,10 +114,7 @@ if __name__ == "__main__":
         else:
             injector_variables.append(element)
 
-    print(f"\n\n\n"
-          f"**************\n"
-          f"* GOLDEN RUN *\n"
-          f"**************\n")
+    print(f"\n\n\n" f"**************\n" f"* GOLDEN RUN *\n" f"**************\n")
     """
     Set-up
     """
@@ -135,11 +132,7 @@ if __name__ == "__main__":
     }
     inj.add_run(golden_run, True)
 
-    print(f"\n\n\n"
-          f"*****************\n"
-          f"* INJECTED RUNS *\n"
-          f"*****************\n"
-          f"\n")
+    print(f"\n\n\n" f"*****************\n" f"* INJECTED RUNS *\n" f"*****************\n" f"\n")
     """
     Runs
     """
@@ -236,22 +229,20 @@ if __name__ == "__main__":
             else:
                 log.critical("Invalid target for injection")
 
-        result = (
-            inj.run(
-                timeout=timedelta(
-                    seconds=random.randint(
-                        int(config["configuration"]["timeout_interval"]["min"]),
-                        int(config["configuration"]["timeout_interval"]["max"]),
-                    )
-                ),
-                injection_delay=timedelta(
-                    seconds=random.randint(
-                        int(config["configuration"]["injection_delay"]["min"]),
-                        int(config["configuration"]["injection_delay"]["max"]),
-                    )
-                ),
-                inject_func=injection_function,
-            )
+        result = inj.run(
+            timeout=timedelta(
+                seconds=random.randint(
+                    int(config["configuration"]["timeout_interval"]["min"]),
+                    int(config["configuration"]["timeout_interval"]["max"]),
+                )
+            ),
+            injection_delay=timedelta(
+                seconds=random.randint(
+                    int(config["configuration"]["injection_delay"]["min"]),
+                    int(config["configuration"]["injection_delay"]["max"]),
+                )
+            ),
+            inject_func=injection_function,
         )
 
         print(f"{' ' * (len(str(abs(i + 1))) + len("!! "))}RUN RESULT {result}\n")
@@ -268,10 +259,7 @@ if __name__ == "__main__":
             }
         )
 
-    print(f"\n\n\n"
-          f"***************\n"
-          f"* SAVE RESULT *\n"
-          f"***************\n")
+    print(f"\n\n\n" f"***************\n" f"* SAVE RESULT *\n" f"***************\n")
     """
     Save the data in CSV file
     """

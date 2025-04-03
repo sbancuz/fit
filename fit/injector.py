@@ -121,18 +121,19 @@ class Injector:
             return self.__internal_injector.run(blocking=True)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            event = self.__internal_injector.run(blocking=False)
-
+            event: str | None = None
             """
             This means that the event was triggered before the injection could take place.
             TODO: Maybe we should return the event instead of 'unknown'? Should this be an error?
             """
-            if event != "unknown":
-                log.error("Event triggered before injection")
+            if (event := self.__internal_injector.run(blocking=False)) != "unknown":
+                log.warning("Event triggered before injection")
                 return event
 
             time.sleep(injection_delay.total_seconds())
-            self.__internal_injector.interrupt()
+            if (event := self.__internal_injector.interrupt()) is not None:
+                log.warning("Event triggered before injection")
+                return event
 
             inject_func(self)
 

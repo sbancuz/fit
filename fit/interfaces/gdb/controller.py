@@ -53,30 +53,11 @@ class GDBController:
         wait_for: list[dict[str, Any]] | dict[str, Any] | None = None,
         whole_response: bool = False,
     ) -> gdb_response:
-        if isinstance(wait_for, dict):
-            wait = [wait_for]
-        else:
-            wait = wait_for if wait_for is not None else []
-
         log.debug(f"--> {command}")
         r: gdb_response = self.controller.write(command, raise_error_on_timeout=False)
 
-        if wait is not None:
-            while True:
-                log.debug(f"<-- {r}")
-                for msg in r:
-                    if "message" in msg and msg["message"] == "error":
-                        log.error(f"Error: {msg['payload']}")
-                        return r
-
-                    for w in wait:
-                        if check(msg, w):
-                            if whole_response:
-                                return r
-
-                            return [msg]
-
-                r = self.controller.get_gdb_response(raise_error_on_timeout=False)
+        if wait_for is not None:
+            return self.await_response(r, wait_for, whole_response)
 
         log.debug(f"<-- {r}")
 
@@ -88,10 +69,45 @@ class GDBController:
         if r == []:
             return
 
-    def wait_response(self) -> gdb_response:
+    def wait_response(
+        self,
+        wait_for: list[dict[str, Any]] | dict[str, Any] | None = None,
+        whole_response: bool = False,
+    ) -> gdb_response:
         r: gdb_response = self.controller.get_gdb_response(raise_error_on_timeout=False)
+        if wait_for is not None:
+            return self.await_response(r, wait_for, whole_response)
+
         log.debug(f"<-- {r}")
         return r
 
     def exit(self) -> None:
         self.controller.exit()
+
+    def await_response(
+        self,
+        request_response: gdb_response,
+        wait_for: list[dict[str, Any]] | dict[str, Any],
+        whole_response: bool = False,
+    ) -> gdb_response:
+        if isinstance(wait_for, dict):
+            wait = [wait_for]
+        else:
+            wait = wait_for
+
+        while True:
+            log.debug(f"<-- {request_response}")
+
+            for msg in request_response:
+                if "message" in msg and msg["message"] == "error":
+                    log.error(f"Error: {msg['payload']}")
+                    return request_response
+
+                for w in wait:
+                    if check(msg, w):
+                        if whole_response:
+                            return request_response
+
+                        return [msg]
+
+            request_response = self.controller.get_gdb_response(raise_error_on_timeout=False)
