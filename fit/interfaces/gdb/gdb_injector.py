@@ -4,6 +4,7 @@ import time
 from typing import Any, Literal, cast
 
 from fit import logger
+from fit.interfaces.gdb.boards import BoardsFamilies
 from fit.interfaces.gdb.controller import GDBController, gdb_response
 from fit.interfaces.internal_injector import InternalInjector
 from fit.mapping import Mapping
@@ -40,6 +41,8 @@ class GDBInjector(InternalInjector):
     register_names: list[str]
 
     embedded: bool = False
+
+    board_family: BoardsFamilies = BoardsFamilies.UNKNOWN
 
     endianness = cast(Literal["little", "big"], "little")
 
@@ -85,8 +88,20 @@ class GDBInjector(InternalInjector):
         if "remote" in kwargs and isinstance(kwargs["remote"], str):
             self.remote(address=kwargs["remote"])
 
-        if "embeded" in kwargs and isinstance(kwargs["embeded"], bool):
-            self.embedded = kwargs["embeded"]
+        if "embedded" in kwargs and isinstance(kwargs["embedded"], bool):
+            self.embedded = kwargs["embedded"]
+
+            if "board_family" in kwargs and isinstance(kwargs["board_family"], str):
+                self.board_family = BoardsFamilies[kwargs["board_family"].upper()]
+            else:
+                log.warning(
+                    f"Board family not recognized: {kwargs['board_family']}, defaulting to `UNKNOWN`"
+                )
+                log.warning("List of supported board families:")
+                for family in BoardsFamilies:
+                    log.warning(f" - {family.name}")
+
+                self.board_family = BoardsFamilies.UNKNOWN
 
         if "word_size" in kwargs and isinstance(kwargs["word_size"], int):
             self.word_size = kwargs["word_size"]
@@ -104,37 +119,62 @@ class GDBInjector(InternalInjector):
 
         self.register_names = r[0]["payload"]["register-names"]
 
+    def reset_stm32(self) -> None:
+        """
+        Perform a hard reset on the target. This calls the monitor command `jtag_reset` in the st-util gdb server. Then, since the target is in a reset state, we wait for the DHCSR register to indicate that the target is in a reset state. If the target is not in a reset state, we wait for 0.5 seconds and check again.
+        The library cannot do this on its own because it can't access the usb device directly since it's already occupied by _this_ gdb server.
+
+        These values _should_ be portable since stlink uses them for everything, so it might be a standard.
+        """
+        self.controller.write(
+            '-interpreter-exec console "monitor jtag_reset"',
+            wait_for={
+                "type": "result",
+                "message": "done",
+                "payload": None,
+            },
+        )
+
+        STM32_REG_DHCSR = 0xE000EDF0
+        STM32_REG_DHCSR_S_RESET_ST = 1 << 25
+
+        dhcsr = self.read_memory(STM32_REG_DHCSR)
+
+        while (dhcsr & STM32_REG_DHCSR_S_RESET_ST) == 0:
+            time.sleep(0.5)
+            dhcsr = self.read_memory(STM32_REG_DHCSR)
+
+    def reset_unknown(self) -> None:
+        """
+        Perform a soft reset on the target. This calls the monitor command `reset` in the st-util gdb server.
+        """
+        self.controller.write(
+            '-interpreter-exec console "monitor reset"',
+            wait_for={
+                "type": "result",
+                "message": "done",
+                "payload": None,
+            },
+        )
+
+        ## Wait for the target to be in a reset state, it's not clear whether this is enough of a delay
+        log.warning(
+            "Resetting on unknown board family, waiting for 1 second for the reset to take effect..."
+        )
+        time.sleep(1)
+
+    reset_functions = {
+        BoardsFamilies.STM32: reset_stm32,
+        BoardsFamilies.UNKNOWN: reset_unknown,
+    }
+
     def reset(self) -> None:
         self.controller.write("-break-delete")
 
         if self.embedded:
             self.controller.write("-target-reset")
 
-            """
-                Perform a hard reset on the target. This calls the monitor command `jtag_reset` in the st-util gdb server. Then, since the target is in a reset state, we wait for the DHCSR register to indicate that the target is in a reset state. If the target is not in a reset state, we wait for 0.5 seconds and check again.
-                The library cannot do this on its own because it can't access the usb device directly since it's already occupied by _this_ gdb server.
-
-            These values _should_ be portable since stlink uses them for everything, so it might be a standard.
-
-            TODO: In the case they aren't, we can just wait a bit and then continue the execution
-            """
-            self.controller.write(
-                '-interpreter-exec console "monitor jtag_reset"',
-                wait_for={
-                    "type": "result",
-                    "message": "done",
-                    "payload": None,
-                },
-            )
-
-            STM32_REG_DHCSR = 0xE000EDF0
-            STM32_REG_DHCSR_S_RESET_ST = 1 << 25
-
-            dhcsr = self.read_memory(STM32_REG_DHCSR)
-
-            while (dhcsr & STM32_REG_DHCSR_S_RESET_ST) == 0:
-                time.sleep(0.5)
-                dhcsr = self.read_memory(STM32_REG_DHCSR)
+            self.reset_functions[self.board_family](self)
 
         else:
             self.controller.write(

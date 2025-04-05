@@ -126,12 +126,12 @@ def main(
             else config["configuration"]["gdb"]["remote"]
         )
 
-    # Injector
     inj = Injector(
         bin=executable,
         gdb_path=config["configuration"]["gdb"]["gdb_path"],
         remote=remote,
         embedded=config["configuration"]["gdb"]["embedded"],
+        board=config["configuration"]["gdb"]["board"],
     )
 
     # Variables to inject

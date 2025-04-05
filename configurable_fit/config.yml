@@ -11,6 +11,7 @@ configuration:
     gdb_path: "gdb"
     remote: "localhost:1234" #true or false
     embedded: false
+    board_family: "stm32"
 
   timeout_interval: #in seconds
     min: 59
