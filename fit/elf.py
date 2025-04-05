@@ -1,3 +1,5 @@
+from typing import cast
+
 import lief
 
 import fit.logger
@@ -9,9 +11,12 @@ class ELF:
     __bin: lief.ELF.Binary
 
     def __init__(self, path: str) -> None:
-        self.__bin = lief.parse(path)
-        if self.__bin is None:
+        bin = lief.parse(path)
+        if bin is None:
             log.critical(f"Failed to parse ELF binary at {path}")
+            return
+
+        self.__bin = cast(lief.ELF.Binary, bin)
 
         self.symbols = ELF.Symbols(self.__bin)
         self.sections = ELF.Sections(self.__bin)

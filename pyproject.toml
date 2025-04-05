@@ -19,11 +19,15 @@ dependencies = [
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[project.scripts]
+fit = "main:main"
+
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
 ruff = "^0.9.8"
 mypy = "^1.15.0"
 pre-commit = "^4.2.0"
+types-pyyaml = "^6.0.12.20250402"
 
 [tool.black]
 line-length = 100
@@ -36,3 +40,4 @@ lint.select = ["E", "F", "W", "C90"]
 python_version = "3.12"
 strict = true
 ignore_missing_imports = true
+

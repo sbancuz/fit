@@ -13,12 +13,12 @@ configuration:
     embedded: false
     board_family: "stm32"
 
-  timeout_interval: #in seconds
-    min: 59
-    max: 60
-  injection_delay: #in seconds
-    min: 5
-    max: 10
+  timeout_interval: #in ms
+    min: 59000
+    max: 60000
+  injection_delay: #in ms
+    min: 5000
+    max: 10000
 
 
 injector: "example_csv.csv"
