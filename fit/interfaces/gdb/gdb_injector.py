@@ -91,17 +91,22 @@ class GDBInjector(InternalInjector):
         if "embedded" in kwargs and isinstance(kwargs["embedded"], bool):
             self.embedded = kwargs["embedded"]
 
-            if "board_family" in kwargs and isinstance(kwargs["board_family"], str):
-                self.board_family = BoardsFamilies[kwargs["board_family"].upper()]
-            else:
-                log.warning(
-                    f"Board family not recognized: {kwargs['board_family']}, defaulting to `UNKNOWN`"
-                )
-                log.warning("List of supported board families:")
-                for family in BoardsFamilies:
-                    log.warning(f" - {family.name}")
+            if self.embedded:
+                if (
+                    "board_family" in kwargs
+                    and isinstance(kwargs["board_family"], str)
+                    and kwargs["board_family"].upper() in BoardsFamilies.__members__
+                ):
+                    self.board_family = BoardsFamilies[kwargs["board_family"].upper()]
+                else:
+                    log.warning(
+                        f"Board family not recognized: {kwargs['board_family']}, defaulting to `UNKNOWN`"
+                    )
+                    log.warning("List of supported board families:")
+                    for family in BoardsFamilies:
+                        log.warning(f" - {family.name}")
 
-                self.board_family = BoardsFamilies.UNKNOWN
+                    self.board_family = BoardsFamilies.UNKNOWN
 
         if "word_size" in kwargs and isinstance(kwargs["word_size"], int):
             self.word_size = kwargs["word_size"]
