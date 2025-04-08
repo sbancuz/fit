@@ -1,10 +1,11 @@
 configuration:
-  executable: "foo"
+  executable: "example"
   experiment_name: "experiment"
   golden_result_condition: "win"
   result_condition: [
     "foo",
-    "main"]
+    "main",
+  ]
   number_of_runs: 10
 
   gdb:
