@@ -130,7 +130,12 @@ def main(
     inj.add_run(golden_run, True)
 
     log.info("Starting runs...")
-    for _ in tqdm(config["configuration"]["number_of_runs"]):
+    for h in log.handlers[:]:
+        log.removeHandler(h)
+    log.addHandler(logger.TqdmLoggingHandler())
+
+    for i in tqdm(range(config["configuration"]["number_of_runs"])):
+        log.info(f"Run: {i + 1}/{config['configuration']['number_of_runs']}")
         """
         Setup procedure
         """

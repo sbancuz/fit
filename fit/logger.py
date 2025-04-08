@@ -1,6 +1,8 @@
 import logging
 from typing import Any
 
+from tqdm import tqdm
+
 
 class Logger(logging.Logger):
     """Custom logger with colored output like Pwntools."""
@@ -52,3 +54,16 @@ class Logger(logging.Logger):
 def get() -> logging.Logger:
     logging.setLoggerClass(Logger)
     return logging.getLogger("fit")
+
+
+class TqdmLoggingHandler(logging.Handler):
+    def __init__(self, level: Any = logging.NOTSET) -> None:
+        super().__init__(level)
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            msg = self.format(record)
+            tqdm.write(msg)
+            self.flush()
+        except Exception:
+            self.handleError(record)
