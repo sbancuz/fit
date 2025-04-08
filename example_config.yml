@@ -10,9 +10,9 @@ configuration:
 
   gdb:
     gdb_path: "gdb"
-    remote: "localhost:1234" #true or false
-    embedded: false
-    board_family: "stm32"
+    # embedded: false
+    # board_family: "stm32"
+    # remote: "localhost:1234"
 
   timeout_interval: #in ms
     min: 59000

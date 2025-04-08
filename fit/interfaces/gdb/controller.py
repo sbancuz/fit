@@ -98,7 +98,7 @@ class GDBController:
 
             for msg in request_response:
                 if "message" in msg and msg["message"] == "error":
-                    log.error(f"Error: {msg['payload']}")
+                    log.critical(f"{msg['payload']}")
                     return request_response
 
                 for w in wait:

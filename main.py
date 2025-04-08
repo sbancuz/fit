@@ -75,24 +75,75 @@ def main(
 
             injector_data[where][operation]["values"].append(entry)
 
-    executable = config["configuration"]["executable"]
+    if (executable := config["configuration"].get("executable")) is None:
+        log.critical("Executable not set")
+        return
 
-    log.info("Configuration read")
+    if (golden_result_condition := config["configuration"].get("golden_result_condition")) is None:
+        log.critical("Golden result condition not set")
+        return
 
-    if remote is None:
-        remote = (
-            "localhost:1234"
-            if not config["configuration"]["gdb"]["remote"]
-            else config["configuration"]["gdb"]["remote"]
-        )
+    if (result_conditions := config["configuration"].get("result_condition")) is None:
+        log.critical("Result condition not set")
+        return
+
+    if (number_of_runs := config["configuration"].get("number_of_runs")) is None:
+        log.critical("Number of runs not set")
+        return
+
+    if (timeout_interval := config["configuration"].get("timeout_interval")) is None:
+        log.critical("Timeout interval not set")
+        return
+
+    if (tout_min := timeout_interval.get("min")) is None:
+        log.critical("Timeout min not set")
+        return
+
+    if (tout_max := timeout_interval.get("max")) is None:
+        log.critical("Timeout max not set")
+        return
+
+    if (injection_delay := config["configuration"].get("injection_delay")) is None:
+        log.critical("Injection delay not set")
+        return
+
+    if (inj_min := injection_delay.get("min")) is None:
+        log.critical("Injection delay min not set")
+        return
+
+    if (inj_max := injection_delay.get("max")) is None:
+        log.critical("Injection delay max not set")
+        return
+
+    if (experiment_name := config["configuration"].get("experiment_name")) is None:
+        log.critical("Experiment name not set")
+        return
 
     if config["configuration"]["gdb"] is not None:
+        if (gdb_path := config["configuration"]["gdb"].get("gdb_path", None)) is None:
+            log.critical("GDB path not set")
+            return
+
+        if (embedded := config["configuration"]["gdb"].get("embedded", None)) is None:
+            log.warning("Embedded not set, defaulting to False")
+            embedded = False
+
+        board_family = config["configuration"]["gdb"].get("board_family", "UNKNOWN")
+
+        if remote is None:
+            if "remote" not in config["configuration"]["gdb"]:
+                log.info("Running locally...")
+            else:
+                remote = config["configuration"]["gdb"]["remote"]
+                log.info(f"Running remotely on {remote}...")
+
+        log.info("Configuration read")
         inj = gdb_injector(
             bin=executable,
             remote=remote,
-            gdb_path=config["configuration"]["gdb"]["gdb_path"],
-            embedded=config["configuration"]["gdb"]["embedded"],
-            board_family=config["configuration"]["gdb"]["board_family"],
+            gdb_path=gdb_path,
+            embedded=embedded,
+            board_family=board_family,
         )
     else:
         log.error(f"Unrecognized injector backend, list of supported backeds:")
@@ -116,7 +167,7 @@ def main(
 
     log.info("Starting golden run")
     inj.reset()
-    inj.set_result_condition(config["configuration"]["golden_result_condition"])
+    inj.set_result_condition(golden_result_condition)
 
     result = inj.run()
 
@@ -134,14 +185,14 @@ def main(
         log.removeHandler(h)
     log.addHandler(logger.TqdmLoggingHandler())
 
-    for i in tqdm(range(config["configuration"]["number_of_runs"])):
-        log.info(f"Run: {i + 1}/{config['configuration']['number_of_runs']}")
+    for i in tqdm(range(number_of_runs), desc="Runs", unit="run"):
+        log.info(f"Run: {i + 1}/{number_of_runs}")
         """
         Setup procedure
         """
         inj.reset()
-        inj.set_result_condition(config["configuration"]["golden_result_condition"])
-        for condition in config["configuration"]["result_condition"]:
+        inj.set_result_condition(golden_result_condition)
+        for condition in result_conditions:
             inj.set_result_condition(condition)
 
         def injection_function(inj: Injector) -> None:
@@ -225,18 +276,8 @@ def main(
                 log.critical("Invalid target for injection")
 
         result = inj.run(
-            timeout=timedelta(
-                milliseconds=random.randint(
-                    int(config["configuration"]["timeout_interval"]["min"]),
-                    int(config["configuration"]["timeout_interval"]["max"]),
-                )
-            ),
-            injection_delay=timedelta(
-                milliseconds=random.randint(
-                    int(config["configuration"]["injection_delay"]["min"]),
-                    int(config["configuration"]["injection_delay"]["max"]),
-                )
-            ),
+            timeout=timedelta(milliseconds=random.randint(tout_min, tout_max)),
+            injection_delay=timedelta(milliseconds=random.randint(inj_min, inj_max)),
             inject_func=injection_function,
         )
 
@@ -254,8 +295,7 @@ def main(
         inj.add_run(run)
         log.info(str(run))
 
-    path = config["configuration"]["experiment_name"]
-    inj.save(path)
+    inj.save(experiment_name)
     inj.close()
 
 

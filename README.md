@@ -4,20 +4,21 @@ This project is a fault injector for embedded systems for the course Advanced Op
 
 ## Install
 
-```sh
+```bash
 $ poetry install
 ```
 
-Currently supported architectures:
- - STM32 <- Use `st-ultils` for `gdbserver`
+Currently supported embedded architectures:
+ - STM32 <- Use [st-util](https://github.com/stlink-org/stlink) for `gdbserver`
+
+> [!Note]
+> It works even with non-embedded targets, remotely (using `gdbserver` or locally. For embedded targets, only remotely!
 
 ## Quickstart
 
-```sh
+```bash
 $ cc -ggdb -O0 -o example example.c
-$ gdbserver localhost:1234 example &
 $ fit -c example_config.yml
-$ pkill gdbserver
 ```
 
 It also provides a library to create custom injectors by importing the module `fit`.
