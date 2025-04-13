@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fit.mapping &mdash; Fault Injection Toolkit - FIT 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Fault Injection Toolkit - FIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fit.html">fit package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit.interfaces.html">fit.interfaces package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit.interfaces.gdb.html">fit.interfaces.gdb package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Fault Injection Toolkit - FIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fit.mapping</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fit.mapping</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="Mapping">
+<a class="viewcode-back" href="../../fit.html#fit.mapping.Mapping">[docs]</a>
+<span></span><span class="k">class</span><span class="w"> </span><span class="nc">Mapping</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class representing a memory mapping.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The starting address of the memory mapping.&quot;&quot;&quot;</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ending address of the memory mapping.&quot;&quot;&quot;</span>
+    <span class="n">end</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The size of the memory mapping.&quot;&quot;&quot;</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The offset of the memory mapping in the file.&quot;&quot;&quot;</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The permissions of the memory mapping.&quot;&quot;&quot;</span>
+    <span class="n">permissions</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The file associated with the memory mapping.&quot;&quot;&quot;</span>
+    <span class="n">file</span><span class="p">:</span> <span class="nb">str</span>
+
+<div class="viewcode-block" id="Mapping.Permissions">
+<a class="viewcode-back" href="../../fit.html#fit.mapping.Mapping.Permissions">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Permissions</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class representing the permissions of the file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">READ</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">WRITE</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">EXEC</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="n">PRIVATE</span> <span class="o">=</span> <span class="mi">8</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">permission</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="n">permission</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">file</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that returns the string representation of the memory mapping.</span>
+
+<span class="sd">        :return: the string representation of the memory mapping.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">perm</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">&amp;</span> <span class="n">Mapping</span><span class="o">.</span><span class="n">Permissions</span><span class="o">.</span><span class="n">READ</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span>
+        <span class="n">perm</span> <span class="o">+=</span> <span class="s2">&quot;w&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">&amp;</span> <span class="n">Mapping</span><span class="o">.</span><span class="n">Permissions</span><span class="o">.</span><span class="n">WRITE</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span>
+        <span class="n">perm</span> <span class="o">+=</span> <span class="s2">&quot;x&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">&amp;</span> <span class="n">Mapping</span><span class="o">.</span><span class="n">Permissions</span><span class="o">.</span><span class="n">EXEC</span> <span class="o">==</span> <span class="mi">4</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span>
+        <span class="n">perm</span> <span class="o">+=</span> <span class="s2">&quot;p&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">&amp;</span> <span class="n">Mapping</span><span class="o">.</span><span class="n">Permissions</span><span class="o">.</span><span class="n">PRIVATE</span> <span class="o">==</span> <span class="mi">8</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Mapping(start=</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">)</span><span class="si">}</span><span class="s2">,&quot;</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;end=</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">)</span><span class="si">}</span><span class="s2">, size=</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="si">}</span><span class="s2">,&quot;</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; offset=</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">perm</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_readable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property that checks if the mapping is readable.</span>
+
+<span class="sd">        :return: True if the mapping is readable, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">&amp;</span> <span class="n">Mapping</span><span class="o">.</span><span class="n">Permissions</span><span class="o">.</span><span class="n">READ</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_writable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property that checks if the mapping is writable.</span>
+
+<span class="sd">        :return: True if the mapping is writable, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">&amp;</span> <span class="n">Mapping</span><span class="o">.</span><span class="n">Permissions</span><span class="o">.</span><span class="n">WRITE</span> <span class="o">==</span> <span class="mi">2</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_executable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property that checks if the mapping is executable.</span>
+
+<span class="sd">        :return: True if the mapping is executable, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">&amp;</span> <span class="n">Mapping</span><span class="o">.</span><span class="n">Permissions</span><span class="o">.</span><span class="n">EXEC</span> <span class="o">==</span> <span class="mi">4</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_private</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property that checks if the mapping is private.</span>
+
+<span class="sd">        :return: True if the mapping is private, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">&amp;</span> <span class="n">Mapping</span><span class="o">.</span><span class="n">Permissions</span><span class="o">.</span><span class="n">PRIVATE</span> <span class="o">==</span> <span class="mi">8</span>
+
+<div class="viewcode-block" id="Mapping.as_range">
+<a class="viewcode-back" href="../../fit.html#fit.mapping.Mapping.as_range">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">range</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that returns the range of the memory mapping.</span>
+
+<span class="sd">        :return: the memory mapping range.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bancale Luca, Conti Alessandro.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
