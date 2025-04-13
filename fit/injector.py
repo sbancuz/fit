@@ -15,14 +15,25 @@ log = logger.get()
 
 
 def noop(_: Type["Injector"]) -> None:
+    """
+    No-operation function for default callbacks.
+
+    :param _: Type of the Injector.
+    """
+
     return
 
 
 class Registers:
+    """
+    Class for interacting with CPU registers through an internal injector.
+    """
+
+    """The internal injector instance."""
     __internal_injector: InternalInjector
-
+    """The parsed ELF binary."""
     elf: ELF
-
+    """The registers."""
     registers: list[str]
 
     def __init__(self, injector: InternalInjector, bin: ELF) -> None:
@@ -32,12 +43,26 @@ class Registers:
         self.registers = self.__internal_injector.get_register_names()
 
     def __getitem__(self, name: str) -> int:
+        """
+        Gets the value of a register by name.
+
+        :param name: the name of the register.
+        :return: the register value.
+        """
+
         if name.lower() not in self.registers:
             log.critical(f"Register {name} not found")
 
         return self.__internal_injector.read_register(name)
 
     def __setitem__(self, name: str, value: int | list[int] | IntList) -> None:
+        """
+        Sets the value of a register by name.
+
+        :param name: the name of the register.
+        :param value: the register value.
+        """
+
         if name not in self.registers:
             log.critical(f"Register {name} not found")
 
@@ -53,26 +78,38 @@ class Registers:
 
 
 class Injector:
+    """
+    Class for managing the injection process into an ELF binary.
+    """
+
+    """The internal injector instance."""
     __internal_injector: InternalInjector
-
+    """The parsed ELF binary."""
     binary: ELF
-
+    """The memory."""
     memory: Memory
-
+    """The registers."""
     regs: Registers
 
     class Event:
+        """
+        Class representing an event with a callback and arguments.
+        """
+
+        """The callback function to be executed."""
         callback: Callable[..., Any]
+        """The additional arguments for the callback function."""
         kwargs: dict[str, Any]
 
         def __init__(self, callback: Callable[..., Any], **kwargs: dict[str, Any]) -> None:
             self.callback = callback
             self.kwargs = kwargs
 
+    """The events."""
     events: dict[str, Event] = {}
-
+    """The golden run. Dictionary with (target, value) pairs."""
     golden: dict[str, Any] = {}
-
+    """The injected run. Dictionary with (target, value) pairs."""
     runs: dict[str, list[Any]] = {}
 
     def __init__(
@@ -92,11 +129,23 @@ class Injector:
         self.runs = defaultdict(list)
 
     def reset(self) -> None:
+        """
+        Function that resets the internal injector instance.
+        """
+
         self.__internal_injector.reset()
 
     def set_result_condition(
         self, event: str, callback: Callable[..., Any] = noop, **kwargs: dict[str, Any]
     ) -> None:
+        """
+        Function that sets a result condition for an event with a callback.
+
+        :param event: the event name.
+        :param callback: the callback function.
+        :param kwargs: the additional arguments for the callback function.
+        """
+
         self.__internal_injector.set_event(event)
 
         self.events[event] = self.Event(callback, **kwargs)
@@ -105,8 +154,17 @@ class Injector:
     def run(self) -> str: ...
 
     @overload
+    def run(self, timeout: timedelta) -> str: ...
+
+    @overload
+    def run(self, timeout: timedelta, injection_delay: timedelta) -> str: ...
+
+    @overload
     def run(
-        self, timeout: timedelta, injection_delay: timedelta, inject_func: Callable[..., Any]
+        self,
+        timeout: timedelta,
+        injection_delay: timedelta,
+        inject_func: Callable[..., Any],
     ) -> str: ...
 
     def run(
@@ -115,6 +173,15 @@ class Injector:
         injection_delay: timedelta | None = None,
         inject_func: Callable[..., Any] | None = None,
     ) -> str:
+        """
+        Function that runs the injection process with optional timeout, injection delay, and injection function.
+
+        :param timeout: the timeout for the injection process.
+        :param injection_delay: the delay for the injection process.
+        :param inject_func: the inject function for the injection process.
+        :return: the result of the injection process.
+        """
+
         if injection_delay is None or inject_func is None:
             return self.__internal_injector.run(blocking=True)
 
@@ -150,9 +217,20 @@ class Injector:
             return event
 
     def close(self) -> None:
+        """
+        Function that closes the internal injector instance.
+        """
+
         self.__internal_injector.close()
 
     def add_run(self, result: dict[str, Any], golden: bool = False) -> None:
+        """
+        Function that adds a result from a run to the collection of runs.
+
+        :param result: the result of the run.
+        :param golden: the golden run.
+        """
+
         for key, value in result.items():
             if isinstance(value, list):
                 for val in value:
@@ -164,6 +242,7 @@ class Injector:
             else:
                 if value is None:
                     log.critical(f"Value for key {key} is None")
+
                 if isinstance(value, dict):
                     log.critical(f"Value for key {key} is a dictionary")
 
@@ -178,6 +257,10 @@ class Injector:
 
     ## TODO: Make a way better reporting function
     def report(self) -> None:
+        """
+        Function that reports the injection runs.
+        """
+
         print("Golden:")
         for key, value in self.golden.items():
             print(f"{key}: {value}")
@@ -188,6 +271,12 @@ class Injector:
                 print(f"{key} ({i}): {run}")
 
     def save(self, path: str) -> None:
+        """
+        Function that saves the runs to CSV files.
+
+        :param path: the path to the CSV file.
+        """
+
         path = path.split(".csv")[0] + ".csv"
         golden_path = path.split(".csv")[0] + "_golden.csv"
 

@@ -4,10 +4,14 @@ from typing import Any
 
 def import_from_csv(file_path: str) -> dict[str, Any]:
     """
-    Reads a CSV file and returns a dictionary.
-    - Column headers become keys.
-    - Values are stored as lists.
+    Function that imports data from a CSV file and stores it in a dictionary.
+
+    Each key in the dictionary corresponds to a column header and the value is a list of entries in that column.
+
+    :param file_path: the path to the CSV file to be imported.
+    :return: the dictionary containing the CSV data, where each key is a column header and the value is a list of column entries.
     """
+
     result: dict[str, list[Any]] = {}
     with open(file_path, mode="r", newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)
@@ -21,10 +25,15 @@ def import_from_csv(file_path: str) -> dict[str, Any]:
 
 def export_to_csv(file_path: str, data: dict[str, Any]) -> None:
     """
-    Saves a dictionary to a CSV file.
-    - Keys become column headers.
-    - Values can be single values or lists.
-    - If a value is a list, it expands into multiple rows.
+    Function that exports data from a dictionary to a CSV file.
+
+    Each key in the dictionary corresponds to a column header and the value is a list of entries in that column.
+    The function raises a ValueError if any value in the dictionary is a nested dictionary.
+    It normalizes the data to ensure all columns have the same number of entries by repeating single values to match the longest list.
+
+    :param file_path: The path to the CSV file to be created.
+    :param data: A dictionary containing the data to be exported, where each key is a column header.
+    :raises ValueError: If any value in the dictionary is a nested dictionary.
     """
 
     for value in data.values():

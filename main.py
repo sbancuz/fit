@@ -47,6 +47,14 @@ def main(
     remote: str | None,
     log_level: Literal["info", "warning", "error", "debug"],
 ) -> None:
+    """
+    Main function that runs the injection process based on the configuration file and options provided.
+
+    :param config_file: the path to the YAML configuration file.
+    :param remote: the remote target of GDB.
+    :param log_level: the logging level.
+    """
+
     log.setLevel(str(log_level).upper())
 
     with open(config_file, "r") as yml_file:
@@ -146,7 +154,7 @@ def main(
             board_family=board_family,
         )
     else:
-        log.error(f"Unrecognized injector backend, list of supported backeds:")
+        log.error(f"Unrecognized injector backend, list of supported backends:")
         for impl in Implementation:
             log.error(impl)
 
@@ -297,6 +305,12 @@ def main(
 
     inj.save(experiment_name)
     inj.close()
+
+
+if __name__ == "__main__":
+    """
+    The main.
+    """
 
 
 if __name__ == "__main__":

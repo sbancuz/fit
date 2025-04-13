@@ -15,11 +15,27 @@ GDB_FLAGS = ["-q", "--nx", "--interpreter=mi3"]
 
 
 def get_int(s: str, byteorder: Literal["little", "big"]) -> int:
+    """
+    Function that converts a hex string to an integer.
+
+    :param s: the hex string to convert.
+    :param byteorder: the endianness of the string (little or big).
+    :return: the integer value
+    """
+
     b = bytes.fromhex(s)
     return int.from_bytes(b, byteorder=byteorder)
 
 
 def to_gdb_hex(i: int, byteorder: Literal["little", "big"]) -> str:
+    """
+    Function that converts an integer to hex string.
+
+    :param i: the integer to convert.
+    :param byteorder: the endianness of the string (little or big).
+    :return: the hex string representation of the integer value.
+    """
+
     s = hex(i).replace("0x", "")
 
     # Ensure even length (pairs of hex digits)
@@ -34,25 +50,35 @@ def to_gdb_hex(i: int, byteorder: Literal["little", "big"]) -> str:
 
 
 class GDBInjector(InternalInjector):
+    """
+    Class that implements the GDB interface of the InternalInjector class.
+    """
+
+    """Handles direct GDB MI communication."""
     controller: GDBController
-
+    """Path to the GDB executable. Defaults to 'gdb_multiarch'."""
     gdb_path: str = "gdb_multiarch"
-
+    """List of available register names."""
     register_names: list[str]
-
+    """Indicates if the target is an embedded device."""
     embedded: bool = False
-
+    """Enum representing known embedded board families."""
     board_family: BoardsFamilies = BoardsFamilies.UNKNOWN
-
+    """Endianness of the target architecture."""
     endianness = cast(Literal["little", "big"], "little")
-
+    """Word size in bytes."""
     word_size: int = 4
 
     class Breakpoint:
+        """
+        Class that represents the breakpoint set in the target binary.
+        """
+
+        """Breakpoint identifier."""
         id: int
-
+        """Breakpoint address."""
         address: int
-
+        """Breakpoint name."""
         name: str
 
         def __init__(
@@ -65,14 +91,20 @@ class GDBInjector(InternalInjector):
             self.address = address
             self.name = name
 
+    """List of breakpoints."""
     breakpoints: list[Breakpoint] = []
 
     class State(enum.Enum):
+        """
+        Enumeration class that enums all possible states.
+        """
+
         STARTING = 0
         RUNNING = 1
         INTERRUPT = 2
         EXIT = 3
 
+    """Current state."""
     state: State = State.STARTING
 
     def __init__(self, elf_path: str, **kwargs: dict[str, Any]) -> None:
@@ -126,11 +158,12 @@ class GDBInjector(InternalInjector):
 
     def reset_stm32(self) -> None:
         """
-        Perform a hard reset on the target. This calls the monitor command `jtag_reset` in the st-util gdb server. Then, since the target is in a reset state, we wait for the DHCSR register to indicate that the target is in a reset state. If the target is not in a reset state, we wait for 0.5 seconds and check again.
+        Function that performs a hard reset on the target. This calls the monitor command `jtag_reset` in the st-util gdb server. Then, since the target is in a reset state, we wait for the DHCSR register to indicate that the target is in a reset state. If the target is not in a reset state, we wait for 0.5 seconds and check again.
         The library cannot do this on its own because it can't access the usb device directly since it's already occupied by _this_ gdb server.
 
         These values _should_ be portable since stlink uses them for everything, so it might be a standard.
         """
+
         self.controller.write(
             '-interpreter-exec console "monitor jtag_reset"',
             wait_for={
@@ -151,8 +184,9 @@ class GDBInjector(InternalInjector):
 
     def reset_unknown(self) -> None:
         """
-        Perform a soft reset on the target. This calls the monitor command `reset` in the st-util gdb server.
+        Function that perform a soft reset on the target. This calls the monitor command `reset` in the st-util gdb server.
         """
+
         self.controller.write(
             '-interpreter-exec console "monitor reset"',
             wait_for={
@@ -168,12 +202,17 @@ class GDBInjector(InternalInjector):
         )
         time.sleep(1)
 
+    """Reset functions."""
     reset_functions = {
         BoardsFamilies.STM32: reset_stm32,
         BoardsFamilies.UNKNOWN: reset_unknown,
     }
 
     def reset(self) -> None:
+        """
+        Function that resets the injector to a known initial state. Useful between test runs or injections.
+        """
+
         self.controller.write("-break-delete")
 
         if self.embedded:
@@ -192,9 +231,22 @@ class GDBInjector(InternalInjector):
             )
 
     def is_running(self) -> bool:
+        """
+        Function that checks if the target is running.
+
+        :return: True if the target is running.
+        """
+
         return self.state == self.State.RUNNING
 
     def remote(self, address: str) -> gdb_response:
+        """
+        Function that connects to a remote GDB server.
+
+        :param address: the remote address in 'host:port' format.
+        :return: the GDB response payload.
+        """
+
         if ":" not in address:
             log.critical('Remote address must be in the format "host:port"')
         if not address.split(":")[1].isdigit():
@@ -206,7 +258,11 @@ class GDBInjector(InternalInjector):
         return self.controller.write(f"-target-select extended-remote {address}")
 
     def set_event(self, event: str) -> None:
-        """Set a handler for an event."""
+        """
+        Function that sets a specific event for this target.
+
+        :param event: the event to set.
+        """
 
         if not self.controller:
             log.critical("GDB controller not initialized")
@@ -235,7 +291,12 @@ class GDBInjector(InternalInjector):
         )
 
     def read_memory(self, address: int) -> int:
-        """Access memory at a given address."""
+        """
+        Function that reads a memory word from the target.
+
+        :param address: the memory address to read from.
+        :return: the value read from the target.
+        """
 
         if not self.controller:
             log.critical("GDB controller not initialized")
@@ -259,7 +320,12 @@ class GDBInjector(InternalInjector):
         return get_int(r["payload"]["memory"][0]["contents"], self.endianness)
 
     def write_memory(self, address: int, value: int) -> None:
-        """Write a value to memory at a given address."""
+        """
+        Function that writes a memory word from the target.
+
+        :param address: the memory address to write to.
+        :param value: the value to write.
+        """
 
         if not self.controller:
             log.critical("GDB controller not initialized")
@@ -276,7 +342,12 @@ class GDBInjector(InternalInjector):
         )
 
     def read_register(self, register: str) -> int:
-        """Read the value of a register."""
+        """
+        Function that reads a register from the target.
+
+        :param register: the register to read.
+        :return: the value read from the target.
+        """
 
         if not self.controller:
             log.critical("GDB controller not initialized")
@@ -301,7 +372,12 @@ class GDBInjector(InternalInjector):
         return int(val["value"])
 
     def write_register(self, register: str, value: int) -> None:
-        """Write a value to a register."""
+        """
+        Function that writes a register from the target.
+
+        :param register: the register to write.
+        :param value: the value to write.
+        """
 
         if not self.controller:
             log.critical("GDB controller not initialized")
@@ -318,11 +394,19 @@ class GDBInjector(InternalInjector):
         )
 
     def close(self) -> None:
-        """Close the injector."""
+        """
+        Function that closes the GDB session and exit the controller.
+        """
+
         self.controller.exit()
 
     def run(self, blocking: bool = False) -> str:
-        """Run the injector for a given amount of time."""
+        """
+        Function that runs the injector for a given amount of time.
+
+        :param blocking: whether to block until the precess stops.
+        :return: the name of the breakpoint hit.
+        """
 
         if not self.controller:
             log.critical("GDB controller not initialized")
@@ -370,9 +454,19 @@ class GDBInjector(InternalInjector):
         return "unknown"
 
     def get_register_names(self) -> list[str]:
+        """
+        Function that returns a list of registers names.
+
+        :return: the list of registers names.
+        """
+
         return self.register_names
 
     def interrupt(self) -> str | None:
+        """
+        Function that interrupts the running process.
+        """
+
         self.state = self.State.INTERRUPT
         r = self.controller.write(
             "-exec-interrupt --all",
@@ -407,6 +501,12 @@ class GDBInjector(InternalInjector):
         return None
 
     def get_mappings(self) -> list[Mapping]:
+        """
+        Function that retrieves memory mappings using GDB's 'info proc mappings'
+
+        :return: the list of memory mappings.
+        """
+
         self.controller.flush()
         mappings = self.controller.write(
             '-interpreter-exec console "info proc mappings"',

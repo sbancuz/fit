@@ -10,11 +10,17 @@ log = logger.get()
 
 class IntList(list[int]):
     """
-    This class has to be used as an intermediary to allow |= like operations on lists of integers.
-    They are defined as element-wise operations.
+    Class that custom list for handling integer operations including bitwise and shift operators.
     """
 
     def __or__(self, other: Union[int, "IntList"]) -> list[int]:
+        """
+        Function that performs bitwise OR operation with an integer or another IntList.
+
+        :param other: the integer or IntList to OR with.
+        :return: the list of integers after performing the OR operation.
+        """
+
         if isinstance(other, int):
             return list([x | other for x in self])
         elif isinstance(other, IntList):
@@ -24,9 +30,23 @@ class IntList(list[int]):
             return [x | y for x, y in zip(self, other)]
 
     def __ror__(self, other: int) -> list[int]:
+        """
+        Function that perform bitwise OR operation with an integer.
+
+        :param other: the integer to OR with.
+        :return: the list of integers after performing the OR operation.
+        """
+
         return list([other | x for x in self])
 
     def __xor__(self, other: Union[int, "IntList"]) -> list[int]:
+        """
+        Function that performs bitwise XOR operation with an integer or another IntList.
+
+        :param other: the integer or IntList to XOR with.
+        :return: the list of integers after performing the XOR operation.
+        """
+
         if isinstance(other, int):
             return list([x ^ other for x in self])
         elif isinstance(other, IntList):
@@ -36,9 +56,23 @@ class IntList(list[int]):
             return [x ^ y for x, y in zip(self, other)]
 
     def __rxor__(self, other: int) -> list[int]:
+        """
+        Function that performs bitwise XOR operation with an integer.
+
+        :param other: the integer to XOR with.
+        :return: the list of integers after performing the XOR operation.
+        """
+
         return list([other ^ x for x in self])
 
     def __and__(self, other: Union[int, "IntList"]) -> list[int]:
+        """
+        Function that performs bitwise AND operation with an integer or another IntList.
+
+        :param other: the integer or IntList to AND with.
+        :return: the list of integers after performing the AND operation.
+        """
+
         if isinstance(other, int):
             return list([x & other for x in self])
         elif isinstance(other, IntList):
@@ -48,24 +82,56 @@ class IntList(list[int]):
             return [x & y for x, y in zip(self, other)]
 
     def __rand__(self, other: int) -> list[int]:
+        """
+        Function that performs bitwise AND operation with an integer.
+
+        :param other: the integer to AND with.
+        :return: the list of integers after performing the AND operation.
+        """
+
         return list([other & x for x in self])
 
     def __lshift__(self, other: int) -> list[int]:
+        """
+        Function that performs bitwise << operation with an integer.
+
+        :param other: the integer to << with.
+        :return: the list of integers after performing the << operation.
+        """
+
         return list([x << other for x in self])
 
     def __rshift__(self, other: int) -> list[int]:
+        """
+        Function that performs bitwise >> operation with an integer.
+
+        :param other: the integer to >> with.
+        :return: the list of integers after performing the >> operation.
+        """
+
         return list([x >> other for x in self])
 
 
 class Memory:
+    """
+    Class for managing memory operations using an internal injector.
+    """
+
+    """The internal injector instance."""
     __internal_injector: InternalInjector
-
+    """The parsed ELF binary."""
     elf: ELF
-
+    """The word size."""
     word_size: int
 
     @property
     def mappings(self) -> list[Mapping]:
+        """
+        Property that returns the memory mappings.
+
+        :return: the list of memory mappings.
+        """
+
         return self.__internal_injector.get_mappings()
 
     def __init__(self, injector: InternalInjector, elf: ELF) -> None:
@@ -83,6 +149,13 @@ class Memory:
     # def __getitem__(self, addr: slice) -> IntList: ...
 
     def __getitem__(self, addr: int | str | slice) -> int | IntList:
+        """
+        Function that get the value(s) at a specific memory address or range of addresses.
+
+        :param addr: the memory address or range of addresses.
+        :return: the value(s) at a specific memory address or range of addresses.
+        """
+
         if isinstance(addr, str):
             """
             Support gdb-style symbols
@@ -145,6 +218,13 @@ class Memory:
     # def __setitem__(self, addr: slice[int, int, int], value: list[int] | IntList) -> None: ...
 
     def __setitem__(self, addr: int | str | slice, value: int | list[int] | IntList) -> None:
+        """
+        Function that set the value(s) at a specific memory address or range of addresses.
+
+        :param addr: the memory address or range of addresses.
+        :param value: the value(s) to set.
+        """
+
         if isinstance(addr, str):
             """
             Support gdb-style symbols
@@ -195,4 +275,10 @@ class Memory:
                 self.__internal_injector.write_memory(true_addr, val)
 
     def mapping_ranges(self) -> list[range]:
+        """
+        Function that returns the ranges of memory mappings.
+
+        :return: the list of ranges of memory mappings.
+        """
+
         return [mapping.as_range() for mapping in self.mappings]
