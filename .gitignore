@@ -1,5 +1,6 @@
 /.direnv/
 __pycache__
 .envrc
+build/
 
 foo
