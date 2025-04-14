@@ -52,9 +52,34 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fit-interfaces-implementations-module">fit.interfaces.implementations module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fit-interfaces-internal-injector-module">fit.interfaces.internal_injector module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fit.interfaces.implementations">fit.interfaces.implementations module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fit.interfaces.implementations.Implementation"><code class="docutils literal notranslate"><span class="pre">Implementation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.implementations.Implementation.GDB"><code class="docutils literal notranslate"><span class="pre">Implementation.GDB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.implementations.Implementation.from_string"><code class="docutils literal notranslate"><span class="pre">Implementation.from_string()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fit.interfaces.internal_injector">fit.interfaces.internal_injector module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector"><code class="docutils literal notranslate"><span class="pre">InternalInjector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.close"><code class="docutils literal notranslate"><span class="pre">InternalInjector.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.get_class"><code class="docutils literal notranslate"><span class="pre">InternalInjector.get_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.get_mappings"><code class="docutils literal notranslate"><span class="pre">InternalInjector.get_mappings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.get_register_names"><code class="docutils literal notranslate"><span class="pre">InternalInjector.get_register_names()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.interrupt"><code class="docutils literal notranslate"><span class="pre">InternalInjector.interrupt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.is_running"><code class="docutils literal notranslate"><span class="pre">InternalInjector.is_running()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.read_memory"><code class="docutils literal notranslate"><span class="pre">InternalInjector.read_memory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.read_register"><code class="docutils literal notranslate"><span class="pre">InternalInjector.read_register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.reset"><code class="docutils literal notranslate"><span class="pre">InternalInjector.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.run"><code class="docutils literal notranslate"><span class="pre">InternalInjector.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.set_event"><code class="docutils literal notranslate"><span class="pre">InternalInjector.set_event()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.write_memory"><code class="docutils literal notranslate"><span class="pre">InternalInjector.write_memory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector.write_register"><code class="docutils literal notranslate"><span class="pre">InternalInjector.write_register()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fit.interfaces">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="fit.interfaces.gdb.html">fit.interfaces.gdb package</a></li>
@@ -93,10 +118,63 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="fit.interfaces.gdb.html">fit.interfaces.gdb package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="fit.interfaces.gdb.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fit.interfaces.gdb.html#fit-interfaces-gdb-boards-module">fit.interfaces.gdb.boards module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fit.interfaces.gdb.html#fit-interfaces-gdb-controller-module">fit.interfaces.gdb.controller module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fit.interfaces.gdb.html#fit-interfaces-gdb-gdb-injector-module">fit.interfaces.gdb.gdb_injector module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fit.interfaces.gdb.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fit.interfaces.gdb.html#module-fit.interfaces.gdb.boards">fit.interfaces.gdb.boards module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.boards.BoardsFamilies"><code class="docutils literal notranslate"><span class="pre">BoardsFamilies</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.boards.BoardsFamilies.STM32"><code class="docutils literal notranslate"><span class="pre">BoardsFamilies.STM32</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.boards.BoardsFamilies.UNKNOWN"><code class="docutils literal notranslate"><span class="pre">BoardsFamilies.UNKNOWN</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fit.interfaces.gdb.html#module-fit.interfaces.gdb.controller">fit.interfaces.gdb.controller module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.controller.GDBController"><code class="docutils literal notranslate"><span class="pre">GDBController</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.controller.GDBController.await_response"><code class="docutils literal notranslate"><span class="pre">GDBController.await_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.controller.GDBController.controller"><code class="docutils literal notranslate"><span class="pre">GDBController.controller</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.controller.GDBController.exit"><code class="docutils literal notranslate"><span class="pre">GDBController.exit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.controller.GDBController.flush"><code class="docutils literal notranslate"><span class="pre">GDBController.flush()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.controller.GDBController.wait_response"><code class="docutils literal notranslate"><span class="pre">GDBController.wait_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.controller.GDBController.write"><code class="docutils literal notranslate"><span class="pre">GDBController.write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.controller.check"><code class="docutils literal notranslate"><span class="pre">check()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fit.interfaces.gdb.html#module-fit.interfaces.gdb.gdb_injector">fit.interfaces.gdb.gdb_injector module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector"><code class="docutils literal notranslate"><span class="pre">GDBInjector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint"><code class="docutils literal notranslate"><span class="pre">GDBInjector.Breakpoint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.State"><code class="docutils literal notranslate"><span class="pre">GDBInjector.State</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.board_family"><code class="docutils literal notranslate"><span class="pre">GDBInjector.board_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.breakpoints"><code class="docutils literal notranslate"><span class="pre">GDBInjector.breakpoints</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.close"><code class="docutils literal notranslate"><span class="pre">GDBInjector.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.controller"><code class="docutils literal notranslate"><span class="pre">GDBInjector.controller</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.embedded"><code class="docutils literal notranslate"><span class="pre">GDBInjector.embedded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.endianness"><code class="docutils literal notranslate"><span class="pre">GDBInjector.endianness</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.gdb_path"><code class="docutils literal notranslate"><span class="pre">GDBInjector.gdb_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.get_mappings"><code class="docutils literal notranslate"><span class="pre">GDBInjector.get_mappings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.get_register_names"><code class="docutils literal notranslate"><span class="pre">GDBInjector.get_register_names()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.interrupt"><code class="docutils literal notranslate"><span class="pre">GDBInjector.interrupt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.is_running"><code class="docutils literal notranslate"><span class="pre">GDBInjector.is_running()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.read_memory"><code class="docutils literal notranslate"><span class="pre">GDBInjector.read_memory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.read_register"><code class="docutils literal notranslate"><span class="pre">GDBInjector.read_register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.register_names"><code class="docutils literal notranslate"><span class="pre">GDBInjector.register_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.remote"><code class="docutils literal notranslate"><span class="pre">GDBInjector.remote()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.reset"><code class="docutils literal notranslate"><span class="pre">GDBInjector.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.reset_functions"><code class="docutils literal notranslate"><span class="pre">GDBInjector.reset_functions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.reset_stm32"><code class="docutils literal notranslate"><span class="pre">GDBInjector.reset_stm32()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.reset_unknown"><code class="docutils literal notranslate"><span class="pre">GDBInjector.reset_unknown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.run"><code class="docutils literal notranslate"><span class="pre">GDBInjector.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.set_event"><code class="docutils literal notranslate"><span class="pre">GDBInjector.set_event()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.state"><code class="docutils literal notranslate"><span class="pre">GDBInjector.state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.word_size"><code class="docutils literal notranslate"><span class="pre">GDBInjector.word_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.write_memory"><code class="docutils literal notranslate"><span class="pre">GDBInjector.write_memory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.write_register"><code class="docutils literal notranslate"><span class="pre">GDBInjector.write_register()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.get_int"><code class="docutils literal notranslate"><span class="pre">get_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.to_gdb_hex"><code class="docutils literal notranslate"><span class="pre">to_gdb_hex()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fit.interfaces.gdb.html#module-fit.interfaces.gdb">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -105,14 +183,225 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="fit-interfaces-implementations-module">
-<h2>fit.interfaces.implementations module<a class="headerlink" href="#fit-interfaces-implementations-module" title="Link to this heading"></a></h2>
+<section id="module-fit.interfaces.implementations">
+<span id="fit-interfaces-implementations-module"></span><h2>fit.interfaces.implementations module<a class="headerlink" href="#module-fit.interfaces.implementations" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="fit.interfaces.implementations.Implementation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fit.interfaces.implementations.</span></span><span class="sig-name descname"><span class="pre">Implementation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/implementations.html#Implementation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.implementations.Implementation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumeration class for the available injector implementations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.implementations.Implementation.GDB">
+<span class="sig-name descname"><span class="pre">GDB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#fit.interfaces.implementations.Implementation.GDB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.implementations.Implementation.from_string">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/implementations.html#Implementation.from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.implementations.Implementation.from_string" title="Link to this definition"></a></dt>
+<dd><p>Function that returns the injector class corresponding to a given implementation name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the implementation name.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="#fit.interfaces.internal_injector.InternalInjector" title="fit.interfaces.internal_injector.InternalInjector"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalInjector</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the class corresponding to the given implementation name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="fit-interfaces-internal-injector-module">
-<h2>fit.interfaces.internal_injector module<a class="headerlink" href="#fit-interfaces-internal-injector-module" title="Link to this heading"></a></h2>
+<section id="module-fit.interfaces.internal_injector">
+<span id="fit-interfaces-internal-injector-module"></span><h2>fit.interfaces.internal_injector module<a class="headerlink" href="#module-fit.interfaces.internal_injector" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fit.interfaces.internal_injector.</span></span><span class="sig-name descname"><span class="pre">InternalInjector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elf_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract class for managing the injection process into an ELF binary.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.close">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.close" title="Link to this definition"></a></dt>
+<dd><p>Function that closes the GDB session and exit the controller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.get_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.get_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.get_class" title="Link to this definition"></a></dt>
+<dd><p>Function that returns the class type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the class type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.get_mappings">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_mappings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.get_mappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.get_mappings" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="fit.html#fit.mapping.Mapping" title="fit.mapping.Mapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.get_register_names">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_register_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.get_register_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.get_register_names" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.interrupt">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">interrupt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.interrupt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.interrupt" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.is_running">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_running</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.is_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.is_running" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.read_memory">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.read_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.read_memory" title="Link to this definition"></a></dt>
+<dd><p>Function that reads a memory word from the target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the memory address to read from.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the value read from the target.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.read_register">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.read_register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.read_register" title="Link to this definition"></a></dt>
+<dd><p>Function that reads a register from the target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>register</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the register to read.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the value read from the target.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.reset">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.reset" title="Link to this definition"></a></dt>
+<dd><p>Function that resets the injector to a known initial state. Useful between test runs or injections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.run">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.run" title="Link to this definition"></a></dt>
+<dd><p>Function that runs the injector for a given amount of time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>blocking</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – whether to block until the precess stops.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the name of the breakpoint hit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.set_event">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.set_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.set_event" title="Link to this definition"></a></dt>
+<dd><p>Function that sets a specific event for this target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the event to set.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.write_memory">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.write_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.write_memory" title="Link to this definition"></a></dt>
+<dd><p>Function that writes a memory word from the target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the memory address to write to.</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the value to write.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.write_register">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.write_register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.write_register" title="Link to this definition"></a></dt>
+<dd><p>Function that writes a register from the target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>register</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the register to write.</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the value to write.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="module-fit.interfaces">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-fit.interfaces" title="Link to this heading"></a></h2>
 </section>
 </section>
 

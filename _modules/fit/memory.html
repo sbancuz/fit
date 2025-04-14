@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fit.memory &mdash; Fault Injection Toolkit - FIT 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="canonical" href="https://sbancuz.github.io/fit/_modules/fit/memory.html" />
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Fault Injection Toolkit - FIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fit.html">fit package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit.interfaces.html">fit.interfaces package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit.interfaces.gdb.html">fit.interfaces.gdb package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Fault Injection Toolkit - FIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fit.memory</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fit.memory</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">fit</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fit.elf</span><span class="w"> </span><span class="kn">import</span> <span class="n">ELF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fit.interfaces.internal_injector</span><span class="w"> </span><span class="kn">import</span> <span class="n">InternalInjector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fit.mapping</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="IntList">
+<a class="viewcode-back" href="../../fit.html#fit.memory.IntList">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IntList</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that custom list for handling integer operations including bitwise and shift operators.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;IntList&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that performs bitwise OR operation with an integer or another IntList.</span>
+
+<span class="sd">        :param other: the integer or IntList to OR with.</span>
+<span class="sd">        :return: the list of integers after performing the OR operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">x</span> <span class="o">|</span> <span class="n">other</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">IntList</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;IntList must have the same length&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="o">|</span> <span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__ror__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that perform bitwise OR operation with an integer.</span>
+
+<span class="sd">        :param other: the integer to OR with.</span>
+<span class="sd">        :return: the list of integers after performing the OR operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">other</span> <span class="o">|</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__xor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;IntList&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that performs bitwise XOR operation with an integer or another IntList.</span>
+
+<span class="sd">        :param other: the integer or IntList to XOR with.</span>
+<span class="sd">        :return: the list of integers after performing the XOR operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">x</span> <span class="o">^</span> <span class="n">other</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">IntList</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;IntList must have the same length&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="o">^</span> <span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__rxor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that performs bitwise XOR operation with an integer.</span>
+
+<span class="sd">        :param other: the integer to XOR with.</span>
+<span class="sd">        :return: the list of integers after performing the XOR operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">other</span> <span class="o">^</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;IntList&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that performs bitwise AND operation with an integer or another IntList.</span>
+
+<span class="sd">        :param other: the integer or IntList to AND with.</span>
+<span class="sd">        :return: the list of integers after performing the AND operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">x</span> <span class="o">&amp;</span> <span class="n">other</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">IntList</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;IntList must have the same length&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="o">&amp;</span> <span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__rand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that performs bitwise AND operation with an integer.</span>
+
+<span class="sd">        :param other: the integer to AND with.</span>
+<span class="sd">        :return: the list of integers after performing the AND operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">other</span> <span class="o">&amp;</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__lshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that performs bitwise &lt;&lt; operation with an integer.</span>
+
+<span class="sd">        :param other: the integer to &lt;&lt; with.</span>
+<span class="sd">        :return: the list of integers after performing the &lt;&lt; operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">other</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__rshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that performs bitwise &gt;&gt; operation with an integer.</span>
+
+<span class="sd">        :param other: the integer to &gt;&gt; with.</span>
+<span class="sd">        :return: the list of integers after performing the &gt;&gt; operation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">([</span><span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="n">other</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="Memory">
+<a class="viewcode-back" href="../../fit.html#fit.memory.Memory">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Memory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for managing memory operations using an internal injector.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The internal injector instance.&quot;&quot;&quot;</span>
+    <span class="n">__internal_injector</span><span class="p">:</span> <span class="n">InternalInjector</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The parsed ELF binary.&quot;&quot;&quot;</span>
+    <span class="n">elf</span><span class="p">:</span> <span class="n">ELF</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The word size.&quot;&quot;&quot;</span>
+    <span class="n">word_size</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Mapping</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property that returns the memory mappings.</span>
+
+<span class="sd">        :return: the list of memory mappings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__internal_injector</span><span class="o">.</span><span class="n">get_mappings</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">injector</span><span class="p">:</span> <span class="n">InternalInjector</span><span class="p">,</span> <span class="n">elf</span><span class="p">:</span> <span class="n">ELF</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__internal_injector</span> <span class="o">=</span> <span class="n">injector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elf</span> <span class="o">=</span> <span class="n">elf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">bits</span> <span class="o">//</span> <span class="mi">8</span>
+
+    <span class="c1"># @overload</span>
+    <span class="c1"># def __getitem__(self, addr: int) -&gt; int: ...</span>
+
+    <span class="c1"># @overload</span>
+    <span class="c1"># def __getitem__(self, addr: str) -&gt; int: ...</span>
+
+    <span class="c1"># @overload</span>
+    <span class="c1"># def __getitem__(self, addr: slice) -&gt; IntList: ...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">slice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">IntList</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that get the value(s) at a specific memory address or range of addresses.</span>
+
+<span class="sd">        :param addr: the memory address or range of addresses.</span>
+<span class="sd">        :return: the value(s) at a specific memory address or range of addresses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Support gdb-style symbols</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="n">location</span> <span class="o">=</span> <span class="n">addr</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">location</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">location</span><span class="p">,</span> <span class="n">off</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">off</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">):</span>
+                    <span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">off</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">off</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">location</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">location</span><span class="p">,</span> <span class="n">off</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">off</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">):</span>
+                    <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">off</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">off</span><span class="p">)</span>
+
+            <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="n">location</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">offset</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">step</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">addr</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">step</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="c1"># Use addr.start, addr.stop, addr.step (with defaults if needed)</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">start</span> <span class="k">if</span> <span class="n">addr</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">addr</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Slice stop must be specified&quot;</span><span class="p">)</span>
+
+            <span class="n">end</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">stop</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">step</span> <span class="k">if</span> <span class="n">addr</span><span class="o">.</span><span class="n">step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span>
+
+        <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__internal_injector</span><span class="o">.</span><span class="n">read_memory</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">IntList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__internal_injector</span><span class="o">.</span><span class="n">read_memory</span><span class="p">(</span><span class="n">true_addr</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">true_addr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="c1"># @overload</span>
+    <span class="c1"># def __setitem__(self, addr: int, value: int) -&gt; None: ...</span>
+
+    <span class="c1"># @overload</span>
+    <span class="c1"># def __setitem__(self, addr: str, value: int) -&gt; None: ...</span>
+
+    <span class="c1"># @overload</span>
+    <span class="c1"># def __setitem__(self, addr: slice[int, int, int], value: int) -&gt; None: ...</span>
+
+    <span class="c1"># @overload</span>
+    <span class="c1"># def __setitem__(self, addr: slice[int, int, int], value: list[int] | IntList) -&gt; None: ...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">slice</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="n">IntList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that set the value(s) at a specific memory address or range of addresses.</span>
+
+<span class="sd">        :param addr: the memory address or range of addresses.</span>
+<span class="sd">        :param value: the value(s) to set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Support gdb-style symbols</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="n">location</span> <span class="o">=</span> <span class="n">addr</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">location</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">location</span><span class="p">,</span> <span class="n">off</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">off</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">):</span>
+                    <span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">off</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">off</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">location</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">location</span><span class="p">,</span> <span class="n">off</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">off</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">):</span>
+                    <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">off</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">off</span><span class="p">)</span>
+
+            <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elf</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="n">location</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">offset</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">step</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">addr</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">step</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="c1"># Use addr.start, addr.stop, addr.step (with defaults if needed)</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">start</span> <span class="k">if</span> <span class="n">addr</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">addr</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Slice stop must be specified&quot;</span><span class="p">)</span>
+
+            <span class="n">end</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">stop</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">step</span> <span class="k">if</span> <span class="n">addr</span><span class="o">.</span><span class="n">step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">true_addr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__internal_injector</span><span class="o">.</span><span class="n">write_memory</span><span class="p">(</span><span class="n">true_addr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">IntList</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">true_addr</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">),</span> <span class="n">value</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__internal_injector</span><span class="o">.</span><span class="n">write_memory</span><span class="p">(</span><span class="n">true_addr</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Memory.mapping_ranges">
+<a class="viewcode-back" href="../../fit.html#fit.memory.Memory.mapping_ranges">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mapping_ranges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">range</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that returns the ranges of memory mappings.</span>
+
+<span class="sd">        :return: the list of ranges of memory mappings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">mapping</span><span class="o">.</span><span class="n">as_range</span><span class="p">()</span> <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mappings</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bancale Luca, Conti Alessandro.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

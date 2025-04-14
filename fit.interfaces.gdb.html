@@ -48,10 +48,63 @@
 <li class="toctree-l1"><a class="reference internal" href="fit.interfaces.html">fit.interfaces package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">fit.interfaces.gdb package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fit-interfaces-gdb-boards-module">fit.interfaces.gdb.boards module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fit-interfaces-gdb-controller-module">fit.interfaces.gdb.controller module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fit-interfaces-gdb-gdb-injector-module">fit.interfaces.gdb.gdb_injector module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fit.interfaces.gdb.boards">fit.interfaces.gdb.boards module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fit.interfaces.gdb.boards.BoardsFamilies"><code class="docutils literal notranslate"><span class="pre">BoardsFamilies</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.boards.BoardsFamilies.STM32"><code class="docutils literal notranslate"><span class="pre">BoardsFamilies.STM32</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.boards.BoardsFamilies.UNKNOWN"><code class="docutils literal notranslate"><span class="pre">BoardsFamilies.UNKNOWN</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fit.interfaces.gdb.controller">fit.interfaces.gdb.controller module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fit.interfaces.gdb.controller.GDBController"><code class="docutils literal notranslate"><span class="pre">GDBController</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.controller.GDBController.await_response"><code class="docutils literal notranslate"><span class="pre">GDBController.await_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.controller.GDBController.controller"><code class="docutils literal notranslate"><span class="pre">GDBController.controller</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.controller.GDBController.exit"><code class="docutils literal notranslate"><span class="pre">GDBController.exit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.controller.GDBController.flush"><code class="docutils literal notranslate"><span class="pre">GDBController.flush()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.controller.GDBController.wait_response"><code class="docutils literal notranslate"><span class="pre">GDBController.wait_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.controller.GDBController.write"><code class="docutils literal notranslate"><span class="pre">GDBController.write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#fit.interfaces.gdb.controller.check"><code class="docutils literal notranslate"><span class="pre">check()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fit.interfaces.gdb.gdb_injector">fit.interfaces.gdb.gdb_injector module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector"><code class="docutils literal notranslate"><span class="pre">GDBInjector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint"><code class="docutils literal notranslate"><span class="pre">GDBInjector.Breakpoint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.State"><code class="docutils literal notranslate"><span class="pre">GDBInjector.State</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.board_family"><code class="docutils literal notranslate"><span class="pre">GDBInjector.board_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.breakpoints"><code class="docutils literal notranslate"><span class="pre">GDBInjector.breakpoints</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.close"><code class="docutils literal notranslate"><span class="pre">GDBInjector.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.controller"><code class="docutils literal notranslate"><span class="pre">GDBInjector.controller</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.embedded"><code class="docutils literal notranslate"><span class="pre">GDBInjector.embedded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.endianness"><code class="docutils literal notranslate"><span class="pre">GDBInjector.endianness</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.gdb_path"><code class="docutils literal notranslate"><span class="pre">GDBInjector.gdb_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.get_mappings"><code class="docutils literal notranslate"><span class="pre">GDBInjector.get_mappings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.get_register_names"><code class="docutils literal notranslate"><span class="pre">GDBInjector.get_register_names()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.interrupt"><code class="docutils literal notranslate"><span class="pre">GDBInjector.interrupt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.is_running"><code class="docutils literal notranslate"><span class="pre">GDBInjector.is_running()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.read_memory"><code class="docutils literal notranslate"><span class="pre">GDBInjector.read_memory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.read_register"><code class="docutils literal notranslate"><span class="pre">GDBInjector.read_register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.register_names"><code class="docutils literal notranslate"><span class="pre">GDBInjector.register_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.remote"><code class="docutils literal notranslate"><span class="pre">GDBInjector.remote()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.reset"><code class="docutils literal notranslate"><span class="pre">GDBInjector.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.reset_functions"><code class="docutils literal notranslate"><span class="pre">GDBInjector.reset_functions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.reset_stm32"><code class="docutils literal notranslate"><span class="pre">GDBInjector.reset_stm32()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.reset_unknown"><code class="docutils literal notranslate"><span class="pre">GDBInjector.reset_unknown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.run"><code class="docutils literal notranslate"><span class="pre">GDBInjector.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.set_event"><code class="docutils literal notranslate"><span class="pre">GDBInjector.set_event()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.state"><code class="docutils literal notranslate"><span class="pre">GDBInjector.state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.word_size"><code class="docutils literal notranslate"><span class="pre">GDBInjector.word_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.write_memory"><code class="docutils literal notranslate"><span class="pre">GDBInjector.write_memory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.write_register"><code class="docutils literal notranslate"><span class="pre">GDBInjector.write_register()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.get_int"><code class="docutils literal notranslate"><span class="pre">get_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.to_gdb_hex"><code class="docutils literal notranslate"><span class="pre">to_gdb_hex()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fit.interfaces.gdb">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -87,17 +140,522 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="fit-interfaces-gdb-boards-module">
-<h2>fit.interfaces.gdb.boards module<a class="headerlink" href="#fit-interfaces-gdb-boards-module" title="Link to this heading"></a></h2>
+<section id="module-fit.interfaces.gdb.boards">
+<span id="fit-interfaces-gdb-boards-module"></span><h2>fit.interfaces.gdb.boards module<a class="headerlink" href="#module-fit.interfaces.gdb.boards" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.boards.BoardsFamilies">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fit.interfaces.gdb.boards.</span></span><span class="sig-name descname"><span class="pre">BoardsFamilies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/boards.html#BoardsFamilies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.boards.BoardsFamilies" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumeration of supported boards families.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.boards.BoardsFamilies.STM32">
+<span class="sig-name descname"><span class="pre">STM32</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#fit.interfaces.gdb.boards.BoardsFamilies.STM32" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.boards.BoardsFamilies.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#fit.interfaces.gdb.boards.BoardsFamilies.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="fit-interfaces-gdb-controller-module">
-<h2>fit.interfaces.gdb.controller module<a class="headerlink" href="#fit-interfaces-gdb-controller-module" title="Link to this heading"></a></h2>
+<section id="module-fit.interfaces.gdb.controller">
+<span id="fit-interfaces-gdb-controller-module"></span><h2>fit.interfaces.gdb.controller module<a class="headerlink" href="#module-fit.interfaces.gdb.controller" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.controller.GDBController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fit.interfaces.gdb.controller.</span></span><span class="sig-name descname"><span class="pre">GDBController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/controller.html#GDBController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.controller.GDBController" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that abstracts GDB MI interactions and provides command writing, response filtering, and graceful shutdown.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.controller.GDBController.await_response">
+<span class="sig-name descname"><span class="pre">await_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whole_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/controller.html#GDBController.await_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.controller.GDBController.await_response" title="Link to this definition"></a></dt>
+<dd><p>Function that continuously poll responses from GDB until one matches the ‘wait_for’ condition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request_response</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span>) – the response to poll.</p></li>
+<li><p><strong>wait_for</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – the expected response pattern.</p></li>
+<li><p><strong>whole_response</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – if True, return all responses when matched.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the matching response or full history if requested.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.controller.GDBController.controller">
+<span class="sig-name descname"><span class="pre">controller</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GdbController</span></code></em><a class="headerlink" href="#fit.interfaces.gdb.controller.GDBController.controller" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.controller.GDBController.exit">
+<span class="sig-name descname"><span class="pre">exit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/controller.html#GDBController.exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.controller.GDBController.exit" title="Link to this definition"></a></dt>
+<dd><p>Function that terminates the GDB session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.controller.GDBController.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/controller.html#GDBController.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.controller.GDBController.flush" title="Link to this definition"></a></dt>
+<dd><p>Function that flushes any pending GDB output without action on it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.controller.GDBController.wait_response">
+<span class="sig-name descname"><span class="pre">wait_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait_for</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whole_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/controller.html#GDBController.wait_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.controller.GDBController.wait_response" title="Link to this definition"></a></dt>
+<dd><p>Function that waits for a response from GDB that matches the specified criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wait_for</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnionType</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – the expected response pattern.</p></li>
+<li><p><strong>whole_response</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – if True, return all responses when matched.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the list of response dictionaries.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.controller.GDBController.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whole_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/controller.html#GDBController.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.controller.GDBController.write" title="Link to this definition"></a></dt>
+<dd><p>Function that sends a command to GDB and optionally wait for a matching response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the command string to send.</p></li>
+<li><p><strong>wait_for</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnionType</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – the response structure to wait for.</p></li>
+<li><p><strong>whole_response</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – if True, returns the full response instead of just the match.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the list of response dictionaries from GDB.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.controller.check">
+<span class="sig-prename descclassname"><span class="pre">fit.interfaces.gdb.controller.</span></span><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/controller.html#check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.controller.check" title="Link to this definition"></a></dt>
+<dd><p>Function that performs a deep check of the data against the wait_for dictionary.
+Each specified key must be present in the data.
+The values just need partial matching to be considered a match.
+So everything in data must be in wait_for, but not everything in wait_for must be in data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – the data to check.</p></li>
+<li><p><strong>wait_for</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – the dictionary to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the result of the check.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="fit-interfaces-gdb-gdb-injector-module">
-<h2>fit.interfaces.gdb.gdb_injector module<a class="headerlink" href="#fit-interfaces-gdb-gdb-injector-module" title="Link to this heading"></a></h2>
+<section id="module-fit.interfaces.gdb.gdb_injector">
+<span id="fit-interfaces-gdb-gdb-injector-module"></span><h2>fit.interfaces.gdb.gdb_injector module<a class="headerlink" href="#module-fit.interfaces.gdb.gdb_injector" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fit.interfaces.gdb.gdb_injector.</span></span><span class="sig-name descname"><span class="pre">GDBInjector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elf_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="fit.interfaces.html#fit.interfaces.internal_injector.InternalInjector" title="fit.interfaces.internal_injector.InternalInjector"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalInjector</span></code></a></p>
+<p>Class that implements the GDB interface of the InternalInjector class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Breakpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.Breakpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that represents the breakpoint set in the target binary.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint.address">
+<span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint.address" title="Link to this definition"></a></dt>
+<dd><p>Breakpoint name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint.id" title="Link to this definition"></a></dt>
+<dd><p>Breakpoint address.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.State">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">State</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.State"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.State" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumeration class that enums all possible states.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.State.EXIT">
+<span class="sig-name descname"><span class="pre">EXIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.State.EXIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.State.INTERRUPT">
+<span class="sig-name descname"><span class="pre">INTERRUPT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.State.INTERRUPT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.State.RUNNING">
+<span class="sig-name descname"><span class="pre">RUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.State.RUNNING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.State.STARTING">
+<span class="sig-name descname"><span class="pre">STARTING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.State.STARTING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.board_family">
+<span class="sig-name descname"><span class="pre">board_family</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fit.interfaces.gdb.boards.BoardsFamilies" title="fit.interfaces.gdb.boards.BoardsFamilies"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoardsFamilies</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.board_family" title="Link to this definition"></a></dt>
+<dd><p>Endianness of the target architecture.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.breakpoints">
+<span class="sig-name descname"><span class="pre">breakpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint" title="fit.interfaces.gdb.gdb_injector.GDBInjector.Breakpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Breakpoint</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.breakpoints" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.close" title="Link to this definition"></a></dt>
+<dd><p>Function that closes the GDB session and exit the controller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.controller">
+<span class="sig-name descname"><span class="pre">controller</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fit.interfaces.gdb.controller.GDBController" title="fit.interfaces.gdb.controller.GDBController"><code class="xref py py-class docutils literal notranslate"><span class="pre">GDBController</span></code></a></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.controller" title="Link to this definition"></a></dt>
+<dd><p>Path to the GDB executable. Defaults to ‘gdb_multiarch’.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.embedded">
+<span class="sig-name descname"><span class="pre">embedded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.embedded" title="Link to this definition"></a></dt>
+<dd><p>Enum representing known embedded board families.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.endianness">
+<span class="sig-name descname"><span class="pre">endianness</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'little'</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.endianness" title="Link to this definition"></a></dt>
+<dd><p>Word size in bytes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.gdb_path">
+<span class="sig-name descname"><span class="pre">gdb_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gdb_multiarch'</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.gdb_path" title="Link to this definition"></a></dt>
+<dd><p>List of available register names.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.get_mappings">
+<span class="sig-name descname"><span class="pre">get_mappings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.get_mappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.get_mappings" title="Link to this definition"></a></dt>
+<dd><p>Function that retrieves memory mappings using GDB’s ‘info proc mappings’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="fit.html#fit.mapping.Mapping" title="fit.mapping.Mapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the list of memory mappings.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.get_register_names">
+<span class="sig-name descname"><span class="pre">get_register_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.get_register_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.get_register_names" title="Link to this definition"></a></dt>
+<dd><p>Function that returns a list of registers names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the list of registers names.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.interrupt">
+<span class="sig-name descname"><span class="pre">interrupt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.interrupt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.interrupt" title="Link to this definition"></a></dt>
+<dd><p>Function that interrupts the running process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.is_running">
+<span class="sig-name descname"><span class="pre">is_running</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.is_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.is_running" title="Link to this definition"></a></dt>
+<dd><p>Function that checks if the target is running.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the target is running.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.read_memory">
+<span class="sig-name descname"><span class="pre">read_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.read_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.read_memory" title="Link to this definition"></a></dt>
+<dd><p>Function that reads a memory word from the target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the memory address to read from.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the value read from the target.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.read_register">
+<span class="sig-name descname"><span class="pre">read_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.read_register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.read_register" title="Link to this definition"></a></dt>
+<dd><p>Function that reads a register from the target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>register</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the register to read.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the value read from the target.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.register_names">
+<span class="sig-name descname"><span class="pre">register_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.register_names" title="Link to this definition"></a></dt>
+<dd><p>Indicates if the target is an embedded device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.remote">
+<span class="sig-name descname"><span class="pre">remote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.remote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.remote" title="Link to this definition"></a></dt>
+<dd><p>Function that connects to a remote GDB server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the remote address in ‘host:port’ format.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the GDB response payload.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.reset" title="Link to this definition"></a></dt>
+<dd><p>Function that resets the injector to a known initial state. Useful between test runs or injections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.reset_functions">
+<span class="sig-name descname"><span class="pre">reset_functions</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{BoardsFamilies.STM32:</span> <span class="pre">&lt;function</span> <span class="pre">GDBInjector.reset_stm32&gt;,</span> <span class="pre">BoardsFamilies.UNKNOWN:</span> <span class="pre">&lt;function</span> <span class="pre">GDBInjector.reset_unknown&gt;}</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.reset_functions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.reset_stm32">
+<span class="sig-name descname"><span class="pre">reset_stm32</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.reset_stm32"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.reset_stm32" title="Link to this definition"></a></dt>
+<dd><p>Function that performs a hard reset on the target. This calls the monitor command <cite>jtag_reset</cite> in the st-util gdb server. Then, since the target is in a reset state, we wait for the DHCSR register to indicate that the target is in a reset state. If the target is not in a reset state, we wait for 0.5 seconds and check again.
+The library cannot do this on its own because it can’t access the usb device directly since it’s already occupied by _this_ gdb server.</p>
+<p>These values _should_ be portable since stlink uses them for everything, so it might be a standard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.reset_unknown">
+<span class="sig-name descname"><span class="pre">reset_unknown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.reset_unknown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.reset_unknown" title="Link to this definition"></a></dt>
+<dd><p>Function that perform a soft reset on the target. This calls the monitor command <cite>reset</cite> in the st-util gdb server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.run" title="Link to this definition"></a></dt>
+<dd><p>Function that runs the injector for a given amount of time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>blocking</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – whether to block until the precess stops.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the name of the breakpoint hit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.set_event">
+<span class="sig-name descname"><span class="pre">set_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.set_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.set_event" title="Link to this definition"></a></dt>
+<dd><p>Function that sets a specific event for this target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the event to set.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.state">
+<span class="sig-name descname"><span class="pre">state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.State" title="fit.interfaces.gdb.gdb_injector.GDBInjector.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.state" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.word_size">
+<span class="sig-name descname"><span class="pre">word_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.word_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.write_memory">
+<span class="sig-name descname"><span class="pre">write_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.write_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.write_memory" title="Link to this definition"></a></dt>
+<dd><p>Function that writes a memory word from the target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the memory address to write to.</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the value to write.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.GDBInjector.write_register">
+<span class="sig-name descname"><span class="pre">write_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#GDBInjector.write_register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.GDBInjector.write_register" title="Link to this definition"></a></dt>
+<dd><p>Function that writes a register from the target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>register</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the register to write.</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the value to write.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.get_int">
+<span class="sig-prename descclassname"><span class="pre">fit.interfaces.gdb.gdb_injector.</span></span><span class="sig-name descname"><span class="pre">get_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#get_int"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.get_int" title="Link to this definition"></a></dt>
+<dd><p>Function that converts a hex string to an integer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the hex string to convert.</p></li>
+<li><p><strong>byteorder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'little'</span></code>, <code class="docutils literal notranslate"><span class="pre">'big'</span></code>]</span>) – the endianness of the string (little or big).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the integer value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fit.interfaces.gdb.gdb_injector.to_gdb_hex">
+<span class="sig-prename descclassname"><span class="pre">fit.interfaces.gdb.gdb_injector.</span></span><span class="sig-name descname"><span class="pre">to_gdb_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/gdb/gdb_injector.html#to_gdb_hex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.gdb.gdb_injector.to_gdb_hex" title="Link to this definition"></a></dt>
+<dd><p>Function that converts an integer to hex string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the integer to convert.</p></li>
+<li><p><strong>byteorder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'little'</span></code>, <code class="docutils literal notranslate"><span class="pre">'big'</span></code>]</span>) – the endianness of the string (little or big).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the hex string representation of the integer value.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="module-fit.interfaces.gdb">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-fit.interfaces.gdb" title="Link to this heading"></a></h2>
 </section>
 </section>
 
