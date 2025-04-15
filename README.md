@@ -1,4 +1,4 @@
-# Fault Injection Toolbox
+# Fault Injection Toolkit
 
 This project is a fault injector for embedded systems for the course Advanced Operating Systems.
 
