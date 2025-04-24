@@ -289,17 +289,20 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.read_memory">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.read_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.read_memory" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.read_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.read_memory" title="Link to this definition"></a></dt>
 <dd><p>Function that reads a memory word from the target.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>address</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the memory address to read from.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the memory address to read from.</p></li>
+<li><p><strong>count</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the number of bytes to read.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the value read from the target.</p>
+<dd class="field-odd"><p>the values read from the target.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -365,13 +368,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.write_memory">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.write_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.write_memory" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.write_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.write_memory" title="Link to this definition"></a></dt>
 <dd><p>Function that writes a memory word from the target.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>address</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the memory address to write to.</p></li>
-<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the value to write.</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – the value to write.</p></li>
+<li><p><strong>repeat</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the number of times to write the value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>

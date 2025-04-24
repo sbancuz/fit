@@ -74,6 +74,7 @@
   <h1>Source code for fit.interfaces.gdb.gdb_injector</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">cast</span>
 
@@ -106,7 +107,7 @@
 
 <div class="viewcode-block" id="to_gdb_hex">
 <a class="viewcode-back" href="../../../../fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.to_gdb_hex">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">to_gdb_hex</span><span class="p">(</span><span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">byteorder</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;little&quot;</span><span class="p">,</span> <span class="s2">&quot;big&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_gdb_hex</span><span class="p">(</span><span class="n">i</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">byteorder</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;little&quot;</span><span class="p">,</span> <span class="s2">&quot;big&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function that converts an integer to hex string.</span>
 
@@ -115,14 +116,16 @@
 <span class="sd">    :return: the hex string representation of the integer value.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">s</span> <span class="o">=</span> <span class="nb">hex</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">byte_array</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span> <span class="o">+</span> <span class="s2">&quot;I&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="o">*</span><span class="n">i</span><span class="p">)</span>
 
-    <span class="c1"># Ensure even length (pairs of hex digits)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">+</span> <span class="n">s</span>
+    <span class="c1"># s = hex(i).replace(&quot;0x&quot;, &quot;&quot;)</span>
 
-    <span class="n">byte_array</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">byteorder</span> <span class="o">==</span> <span class="s2">&quot;little&quot;</span><span class="p">:</span>
+    <span class="c1"># # Ensure even length (pairs of hex digits)</span>
+    <span class="c1"># if len(s) % 2 != 0:</span>
+    <span class="c1">#     s = &quot;0&quot; + s</span>
+
+    <span class="c1"># byte_array = bytes.fromhex(s)</span>
+    <span class="k">if</span> <span class="n">byteorder</span> <span class="o">==</span> <span class="s2">&quot;big&quot;</span><span class="p">:</span>
         <span class="n">byte_array</span> <span class="o">=</span> <span class="n">byte_array</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">b</span><span class="si">:</span><span class="s2">02x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">byte_array</span><span class="p">)</span></div>
@@ -266,11 +269,11 @@
         <span class="n">STM32_REG_DHCSR</span> <span class="o">=</span> <span class="mh">0xE000EDF0</span>
         <span class="n">STM32_REG_DHCSR_S_RESET_ST</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">25</span>
 
-        <span class="n">dhcsr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_memory</span><span class="p">(</span><span class="n">STM32_REG_DHCSR</span><span class="p">)</span>
+        <span class="n">dhcsr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_memory</span><span class="p">(</span><span class="n">STM32_REG_DHCSR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">while</span> <span class="p">(</span><span class="n">dhcsr</span> <span class="o">&amp;</span> <span class="n">STM32_REG_DHCSR_S_RESET_ST</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
-            <span class="n">dhcsr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_memory</span><span class="p">(</span><span class="n">STM32_REG_DHCSR</span><span class="p">)</span></div>
+            <span class="n">dhcsr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_memory</span><span class="p">(</span><span class="n">STM32_REG_DHCSR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="GDBInjector.reset_unknown">
@@ -398,13 +401,20 @@
 
 <div class="viewcode-block" id="GDBInjector.read_memory">
 <a class="viewcode-back" href="../../../../fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.read_memory">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">read_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function that reads a memory word from the target.</span>
 
 <span class="sd">        :param address: the memory address to read from.</span>
+<span class="sd">        :param count: the number of bytes to read.</span>
 <span class="sd">        :return: the value read from the target.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Reading less than </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">word_size</span><span class="si">}</span><span class="s2"> bytes, defaulting to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">word_size</span><span class="si">}</span><span class="s2"> bytes&quot;</span>
+            <span class="p">)</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;GDB controller not initialized&quot;</span><span class="p">)</span>
@@ -412,7 +422,7 @@
             <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Cannot read memory while process is running&quot;</span><span class="p">)</span>
 
         <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;-data-read-memory-bytes </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">word_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;-data-read-memory-bytes </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">wait_for</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;done&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;memory&quot;</span><span class="p">:</span> <span class="p">[]},</span>
@@ -422,15 +432,30 @@
             <span class="p">},</span>
         <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;done&quot;</span> <span class="ow">or</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">][</span><span class="s2">&quot;memory&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Tried to read unreadable memory, filling the gaps with 0&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">get_int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">][</span><span class="s2">&quot;memory&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;contents&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">endianness</span><span class="p">)</span></div>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">count</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">size</span> <span class="k">if</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">][</span><span class="s2">&quot;memory&quot;</span><span class="p">]:</span>
+            <span class="n">off</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+            <span class="n">begin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;begin&quot;</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+
+            <span class="n">val</span> <span class="o">=</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;contents&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">end</span> <span class="o">-</span> <span class="n">begin</span><span class="p">)</span> <span class="o">//</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">word_size</span><span class="p">)):</span>
+                <span class="c1">## We do word_size * 2 since in text 2 chars are a byte</span>
+                <span class="n">ini</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span> <span class="o">*</span> <span class="mi">2</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">word_size</span> <span class="o">*</span> <span class="mi">2</span>
+                <span class="n">res</span><span class="p">[</span><span class="n">off</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_int</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="n">ini</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">endianness</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
 
 
 <div class="viewcode-block" id="GDBInjector.write_memory">
 <a class="viewcode-back" href="../../../../fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.GDBInjector.write_memory">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">write_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">repeat</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function that writes a memory word from the target.</span>
 
@@ -444,7 +469,7 @@
             <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Cannot write memory while process is running&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;-data-write-memory-bytes </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">to_gdb_hex</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;little&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;-data-write-memory-bytes </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">to_gdb_hex</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">endianness</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">repeat</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">wait_for</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;done&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -595,7 +620,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function that interrupts the running process.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">INTERRUPT</span>
         <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
             <span class="s2">&quot;-exec-interrupt --all&quot;</span><span class="p">,</span>
@@ -615,6 +639,15 @@
                     <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;notify&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;stopped&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;breakpoint-hit&quot;</span><span class="p">,</span> <span class="s2">&quot;bkptno&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;notify&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;stopped&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;signal-received&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;signal-name&quot;</span><span class="p">:</span> <span class="s2">&quot;SIGTRAP&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;signal-meaning&quot;</span><span class="p">:</span> <span class="s2">&quot;Trace/breakpoint trap&quot;</span><span class="p">,</span>
+                    <span class="p">},</span>
                 <span class="p">},</span>
             <span class="p">],</span>
         <span class="p">)</span>

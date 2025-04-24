@@ -180,7 +180,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#fit.stencil.Stencil.layer"><code class="docutils literal notranslate"><span class="pre">Stencil.layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#fit.stencil.Stencil.offset_distribution"><code class="docutils literal notranslate"><span class="pre">Stencil.offset_distribution</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#fit.stencil.Stencil.pattern_distribution"><code class="docutils literal notranslate"><span class="pre">Stencil.pattern_distribution</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#fit.stencil.Stencil.pattern_size"><code class="docutils literal notranslate"><span class="pre">Stencil.pattern_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit.stencil.Stencil.pattern_size_in_words"><code class="docutils literal notranslate"><span class="pre">Stencil.pattern_size_in_words</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#fit.stencil.Stencil.patterns"><code class="docutils literal notranslate"><span class="pre">Stencil.patterns</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#fit.stencil.Stencil.random"><code class="docutils literal notranslate"><span class="pre">Stencil.random()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#fit.stencil.Stencil.word_size"><code class="docutils literal notranslate"><span class="pre">Stencil.word_size</span></code></a></li>
@@ -648,7 +648,7 @@ It normalizes the data to ensure all columns have the same number of entries by 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="fit.injector.Injector.golden">
-<span class="sig-name descname"><span class="pre">golden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#fit.injector.Injector.golden" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">golden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#fit.injector.Injector.golden" title="Link to this definition"></a></dt>
 <dd><p>The injected run. Dictionary with (target, value) pairs.</p>
 </dd></dl>
 
@@ -1125,7 +1125,7 @@ It normalizes the data to ensure all columns have the same number of entries by 
 <span id="fit-stencil-module"></span><h2>fit.stencil module<a class="headerlink" href="#module-fit.stencil" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="fit.stencil.Stencil">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fit.stencil.</span></span><span class="sig-name descname"><span class="pre">Stencil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patterns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_distribution=&lt;fit.distribution.Uniform</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern_distribution=&lt;fit.distribution.Uniform</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word_size=32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/stencil.html#Stencil"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.stencil.Stencil" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fit.stencil.</span></span><span class="sig-name descname"><span class="pre">Stencil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patterns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_distribution=&lt;fit.distribution.Uniform</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern_distribution=&lt;fit.distribution.Uniform</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word_size=4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/stencil.html#Stencil"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.stencil.Stencil" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class representing a stencil used for generating random patterns with specified distributions.</p>
 <dl class="py method">
@@ -1161,8 +1161,8 @@ It normalizes the data to ensure all columns have the same number of entries by 
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="fit.stencil.Stencil.pattern_size">
-<span class="sig-name descname"><span class="pre">pattern_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#fit.stencil.Stencil.pattern_size" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="fit.stencil.Stencil.pattern_size_in_words">
+<span class="sig-name descname"><span class="pre">pattern_size_in_words</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#fit.stencil.Stencil.pattern_size_in_words" title="Link to this definition"></a></dt>
 <dd><p>The word size for the stencil.</p>
 </dd></dl>
 
