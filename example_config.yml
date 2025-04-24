@@ -14,9 +14,7 @@ configuration:
     # board_family: "stm32"
     # remote: "localhost:1234"
 
-  timeout_interval: #in ms
-    min: 59000
-    max: 60000
+  timeout: 60000
   injection_delay: #in ms
     min: 5000
     max: 10000

@@ -244,8 +244,11 @@ def main(
                 float(v["value_probability"])
                 for v in injector_data[where_operation[0]][where_operation[1]]["values"]
             ]
-            ## TODO: Get word size from the target
-            gen = Stencil(patterns=values, pattern_distribution=Fixed(distribution), word_size=4)
+            gen = Stencil(
+                patterns=values,
+                pattern_distribution=Fixed(distribution),
+                word_size=inj.binary.bits // 8,
+            )
 
             if where in injector_variables or to_mem_val(where) in injector_memories:
                 actual = to_mem_val(where)
