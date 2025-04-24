@@ -108,7 +108,7 @@ class Injector:
     """The events."""
     events: dict[str, Event] = {}
     """The golden run. Dictionary with (target, value) pairs."""
-    golden: dict[str, Any] = {}
+    golden: dict[str, list[Any]] = {}
     """The injected run. Dictionary with (target, value) pairs."""
     runs: dict[str, list[Any]] = {}
 
@@ -127,6 +127,7 @@ class Injector:
         self.regs = Registers(self.__internal_injector, self.binary)
         self.memory = Memory(self.__internal_injector, self.binary)
         self.runs = defaultdict(list)
+        self.golden = defaultdict(list)
 
     def reset(self) -> None:
         """
@@ -250,7 +251,8 @@ class Injector:
             log.critical("Golden run and runs must have the same keys")
 
         if golden:
-            self.golden = result
+            for key, value in result.items():
+                self.golden[key].append(value)
         else:
             for key, value in result.items():
                 self.runs[key].append(value)
