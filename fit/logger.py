@@ -43,7 +43,11 @@ class Logger(logging.Logger):
 
         color = self.COLORS.get(level, "")
         reset = self.COLORS["RESET"]
-        return f"[{color}{level}{reset}] {message}"
+        try:
+            return f"[{color}{level}{reset}] {message}"
+        except Exception as e:
+            self.warning(f"Failed to format log message: {e}")
+            return ""
 
     def debug(self, msg: str, *args: object, **kwargs: Any) -> None:  # type: ignore
         """

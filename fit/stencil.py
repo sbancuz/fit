@@ -18,7 +18,7 @@ class Stencil:
     """The patterns to use for the stencil."""
     patterns: list[int]
     """The pattern size."""
-    pattern_size: int
+    pattern_size_in_words: int
     """The word size for the stencil."""
     word_size: int
 
@@ -27,13 +27,15 @@ class Stencil:
         patterns: int | list[int],
         offset_distribution: Distribution = Uniform(0, 0),
         pattern_distribution: Distribution = Uniform(0, 0),
-        word_size: int = 32,
+        word_size: int = 4,
     ) -> None:
         self.offset_distribution = offset_distribution
         self.pattern_distribution = pattern_distribution
         self.patterns = [patterns] if isinstance(patterns, int) else patterns
-        self.pattern_size = max([pattern.bit_length() for pattern in self.patterns])
-        self.word_size = word_size
+        self.bits = word_size * 8
+        self.pattern_size = max(
+            [(pattern.bit_length() // self.bits) + 1 for pattern in self.patterns]
+        )
 
         assert len(self.patterns) > 0, "At least one pattern must be provided."
         assert len(self.patterns) - 1 == pattern_distribution.length(), (
@@ -50,12 +52,14 @@ class Stencil:
         pattern = self.patterns[self.pattern_distribution.random()]
         val = pattern << self.offset_distribution.random()
 
-        max_value = (1 << self.word_size) - 1
-        max_number_of_chunks = (max_value.bit_length() + self.word_size - 1) // self.word_size
+        max_value = (1 << self.bits) - 1
+        max_number_of_chunks = self.offset_distribution.length() // self.bits + (
+            self.pattern_size - 1
+        )
 
         res = [0 for _ in range(max_number_of_chunks)]
         for i in range(max_number_of_chunks):
-            res[i] = (val >> (self.word_size * i)) & max_value
+            res[i] = (val >> (self.bits * i)) & max_value
 
         return IntList(res)
 
@@ -70,10 +74,10 @@ class Stencil:
 
         assert min_times <= max_times, "Minimum times must be less than maximum times."
 
-        max_value = (1 << self.word_size) - 1
-        max_number_of_chunks = (max_value.bit_length() + self.word_size - 1) // self.word_size
+        max_number_of_chunks = self.offset_distribution.length() // self.bits + (
+            self.pattern_size - 1
+        )
         res = [0 for _ in range(max_number_of_chunks)]
-
         for _ in range(random.randint(min_times, max_times)):
             choice = self.random()
 

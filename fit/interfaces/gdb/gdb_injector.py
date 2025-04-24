@@ -1,5 +1,6 @@
 import enum
 import re
+import struct
 import time
 from typing import Any, Literal, cast
 
@@ -27,7 +28,7 @@ def get_int(s: str, byteorder: Literal["little", "big"]) -> int:
     return int.from_bytes(b, byteorder=byteorder)
 
 
-def to_gdb_hex(i: int, byteorder: Literal["little", "big"]) -> str:
+def to_gdb_hex(i: list[int], byteorder: Literal["little", "big"]) -> str:
     """
     Function that converts an integer to hex string.
 
@@ -36,14 +37,16 @@ def to_gdb_hex(i: int, byteorder: Literal["little", "big"]) -> str:
     :return: the hex string representation of the integer value.
     """
 
-    s = hex(i).replace("0x", "")
+    byte_array = struct.pack("<" + "I" * len(i), *i)
 
-    # Ensure even length (pairs of hex digits)
-    if len(s) % 2 != 0:
-        s = "0" + s
+    # s = hex(i).replace("0x", "")
 
-    byte_array = bytes.fromhex(s)
-    if byteorder == "little":
+    # # Ensure even length (pairs of hex digits)
+    # if len(s) % 2 != 0:
+    #     s = "0" + s
+
+    # byte_array = bytes.fromhex(s)
+    if byteorder == "big":
         byte_array = byte_array[::-1]
 
     return "".join(f"{b:02x}" for b in byte_array)
@@ -176,11 +179,11 @@ class GDBInjector(InternalInjector):
         STM32_REG_DHCSR = 0xE000EDF0
         STM32_REG_DHCSR_S_RESET_ST = 1 << 25
 
-        dhcsr = self.read_memory(STM32_REG_DHCSR)
+        dhcsr = self.read_memory(STM32_REG_DHCSR, self.word_size)[0]
 
         while (dhcsr & STM32_REG_DHCSR_S_RESET_ST) == 0:
             time.sleep(0.5)
-            dhcsr = self.read_memory(STM32_REG_DHCSR)
+            dhcsr = self.read_memory(STM32_REG_DHCSR, self.word_size)[0]
 
     def reset_unknown(self) -> None:
         """
@@ -290,13 +293,20 @@ class GDBInjector(InternalInjector):
             )
         )
 
-    def read_memory(self, address: int) -> int:
+    def read_memory(self, address: int, count: int) -> list[int]:
         """
         Function that reads a memory word from the target.
 
         :param address: the memory address to read from.
+        :param count: the number of bytes to read.
         :return: the value read from the target.
         """
+
+        if count < self.word_size:
+            log.warning(
+                f"Reading less than {self.word_size} bytes, defaulting to {self.word_size} bytes"
+            )
+            count = self.word_size
 
         if not self.controller:
             log.critical("GDB controller not initialized")
@@ -304,7 +314,7 @@ class GDBInjector(InternalInjector):
             log.critical("Cannot read memory while process is running")
 
         r = self.controller.write(
-            f"-data-read-memory-bytes {hex(address)} {self.word_size}",
+            f"-data-read-memory-bytes {hex(address)} {count}",
             wait_for={
                 "message": "done",
                 "payload": {"memory": []},
@@ -314,12 +324,27 @@ class GDBInjector(InternalInjector):
             },
         )[0]
 
-        if r["message"] != "done" or r["type"] != "result":
-            print(r)
+        if len(r["payload"]["memory"]) > 1:
+            log.warning("Tried to read unreadable memory, filling the gaps with 0")
 
-        return get_int(r["payload"]["memory"][0]["contents"], self.endianness)
+        size = count // self.word_size
+        size = size if size > 0 else self.word_size
+        res = [0 for _ in range(size)]
+        for chunk in r["payload"]["memory"]:
+            off = int(chunk["offset"], 16)
+            end = int(chunk["end"], 16)
+            begin = int(chunk["begin"], 16)
 
-    def write_memory(self, address: int, value: int) -> None:
+            val = chunk["contents"]
+            for i in range((end - begin) // (self.word_size)):
+                ## We do word_size * 2 since in text 2 chars are a byte
+                ini = i * self.word_size * 2
+                end = (i + 1) * self.word_size * 2
+                res[off + i] = get_int(val[ini:end], self.endianness)
+
+        return res
+
+    def write_memory(self, address: int, value: list[int], repeat: int) -> None:
         """
         Function that writes a memory word from the target.
 
@@ -333,7 +358,7 @@ class GDBInjector(InternalInjector):
             log.critical("Cannot write memory while process is running")
 
         self.controller.write(
-            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, 'little')}",
+            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, self.endianness)} {hex(repeat)}",
             wait_for={
                 "message": "done",
                 "payload": None,
@@ -466,7 +491,6 @@ class GDBInjector(InternalInjector):
         """
         Function that interrupts the running process.
         """
-
         self.state = self.State.INTERRUPT
         r = self.controller.write(
             "-exec-interrupt --all",
@@ -486,6 +510,15 @@ class GDBInjector(InternalInjector):
                     "type": "notify",
                     "message": "stopped",
                     "payload": {"reason": "breakpoint-hit", "bkptno": None},
+                },
+                {
+                    "type": "notify",
+                    "message": "stopped",
+                    "payload": {
+                        "reason": "signal-received",
+                        "signal-name": "SIGTRAP",
+                        "signal-meaning": "Trace/breakpoint trap",
+                    },
                 },
             ],
         )

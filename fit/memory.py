@@ -51,7 +51,7 @@ class IntList(list[int]):
             return list([x ^ other for x in self])
         elif isinstance(other, IntList):
             if len(other) != len(self):
-                log.critical("IntList must have the same length")
+                log.critical(f"IntList must have the same length {len(other)} != {len(self)}.")
 
             return [x ^ y for x, y in zip(self, other)]
 
@@ -195,15 +195,20 @@ class Memory:
             end = addr.stop
             step = addr.step if addr.step is not None else self.word_size
 
-        if step == self.word_size:
-            return self.__internal_injector.read_memory(start)
+        if step != self.word_size:
+            res = IntList(
+                [
+                    self.__internal_injector.read_memory(true_addr, self.word_size)[0]
+                    for true_addr in range(start, end, step)
+                ]
+            )
+        else:
+            res = IntList(self.__internal_injector.read_memory(start, end - start))
 
-        return IntList(
-            [
-                self.__internal_injector.read_memory(true_addr)
-                for true_addr in range(start, end, step)
-            ]
-        )
+        if len(res) == 1:
+            return res[0]
+        else:
+            return res
 
     # @overload
     # def __setitem__(self, addr: int, value: int) -> None: ...
@@ -265,14 +270,19 @@ class Memory:
             step = addr.step if addr.step is not None else self.word_size
 
         if isinstance(value, int):
-            for true_addr in range(start, end, step):
-                self.__internal_injector.write_memory(true_addr, value)
+            self.__internal_injector.write_memory(start, [value], (end - start) // step)
         else:
             if isinstance(value, IntList):
                 value = list(value)
 
-            for true_addr, val in zip(range(start, end, step), value):
-                self.__internal_injector.write_memory(true_addr, val)
+            if step != self.word_size:
+                for true_addr, val in zip(range(start, end, step), value):
+                    if val == 0:
+                        continue
+
+                    self.__internal_injector.write_memory(true_addr, [val], 1)
+            else:
+                self.__internal_injector.write_memory(start, value, 1)
 
     def mapping_ranges(self) -> list[range]:
         """

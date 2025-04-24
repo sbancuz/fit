@@ -9,13 +9,21 @@ import yaml
 from tqdm import tqdm
 
 from fit import logger
-from fit.distribution import Fixed
+from fit.distribution import Fixed, Uniform
 from fit.fitlib import gdb_injector
 from fit.injector import Injector
 from fit.interfaces.implementations import Implementation
 from fit.stencil import Stencil
 
 log = logger.get()
+
+
+def to_mem_val(element: str) -> slice | int:
+    if ":" in element:
+        start, end = element.split(":")
+        return slice(int(start, 16), int(end, 16))
+    else:
+        return int(element, 16)
 
 
 @click.command()
@@ -99,16 +107,8 @@ def main(
         log.critical("Number of runs not set")
         return
 
-    if (timeout_interval := config["configuration"].get("timeout_interval")) is None:
-        log.critical("Timeout interval not set")
-        return
-
-    if (tout_min := timeout_interval.get("min")) is None:
-        log.critical("Timeout min not set")
-        return
-
-    if (tout_max := timeout_interval.get("max")) is None:
-        log.critical("Timeout max not set")
+    if (timeout := config["configuration"].get("timeout")) is None:
+        log.critical("Timeout is not set")
         return
 
     if (injection_delay := config["configuration"].get("injection_delay")) is None:
@@ -169,7 +169,8 @@ def main(
         if element in inj.regs.registers:
             injector_registers.append(element)
         elif element.startswith("0x"):
-            injector_memories.append(element)
+            injector_memories.append(to_mem_val(element))
+
         else:
             injector_variables.append(element)
 
@@ -183,7 +184,7 @@ def main(
         "result": result,
         **{variable: inj.memory[variable] for variable in injector_variables},
         **{register: inj.regs[register] for register in injector_registers},
-        **{memory: inj.memory[memory] for memory in injector_memories},
+        **{str(memory): inj.memory[memory] for memory in injector_memories},
     }
     log.info(golden_run)
     inj.add_run(golden_run, True)
@@ -243,20 +244,15 @@ def main(
                 float(v["value_probability"])
                 for v in injector_data[where_operation[0]][where_operation[1]]["values"]
             ]
-            gen = Stencil(patterns=values, pattern_distribution=Fixed(distribution))
+            ## TODO: Get word size from the target
+            gen = Stencil(patterns=values, pattern_distribution=Fixed(distribution), word_size=4)
 
-            if where in injector_variables or where in injector_memories:
-                actual: slice[int, int, int] | int | str = 0
-                if ":" in where:
-                    start, end = where.split(":")
-
-                    actual = slice(int(start, 16), int(end, 16), 1)
-                elif where.startswith("0x"):
-                    actual = int(where, 16)
-                elif isinstance(where, str):
-                    actual = where
-                else:
-                    log.critical(f"Unreachable")
+            if where in injector_variables or to_mem_val(where) in injector_memories:
+                actual = to_mem_val(where)
+                if isinstance(actual, slice):
+                    gen.offset_distribution = Uniform(
+                        0, (actual.stop - actual.start) * 8, granularity=inj.binary.bits
+                    )
 
                 if operation == "xor":
                     inj.memory[actual] ^= gen.random()
@@ -284,7 +280,7 @@ def main(
                 log.critical("Invalid target for injection")
 
         result = inj.run(
-            timeout=timedelta(milliseconds=random.randint(tout_min, tout_max)),
+            timeout=timedelta(milliseconds=timeout),
             injection_delay=timedelta(milliseconds=random.randint(inj_min, inj_max)),
             inject_func=injection_function,
         )
@@ -298,19 +294,13 @@ def main(
             "result": result,
             **{variable: inj.memory[variable] for variable in injector_variables},
             **{register: inj.regs[register] for register in injector_registers},
-            **{memory: inj.memory[memory] for memory in injector_memories},
+            **{str(memory): inj.memory[memory] for memory in injector_memories},
         }
         inj.add_run(run)
         log.info(str(run))
 
     inj.save(experiment_name)
     inj.close()
-
-
-if __name__ == "__main__":
-    """
-    The main.
-    """
 
 
 if __name__ == "__main__":

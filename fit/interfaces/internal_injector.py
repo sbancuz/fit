@@ -40,21 +40,23 @@ class InternalInjector(ABC):
         """
 
     @abstractmethod
-    def read_memory(self: InternalInjector, address: int) -> int:
+    def read_memory(self: InternalInjector, address: int, count: int) -> list[int]:
         """
         Function that reads a memory word from the target.
 
         :param address: the memory address to read from.
-        :return: the value read from the target.
+        :param count: the number of bytes to read.
+        :return: the values read from the target.
         """
 
     @abstractmethod
-    def write_memory(self: InternalInjector, address: int, value: int) -> None:
+    def write_memory(self: InternalInjector, address: int, value: list[int], repeat: int) -> None:
         """
         Function that writes a memory word from the target.
 
         :param address: the memory address to write to.
         :param value: the value to write.
+        :param repeat: the number of times to write the value.
         """
 
     @abstractmethod
