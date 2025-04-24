@@ -18,6 +18,15 @@ from fit.stencil import Stencil
 log = logger.get()
 
 
+def format_memory_addr(s: slice[int, int, int] | int) -> str:
+    if not isinstance(s, slice):
+        return f"0x{s:x}"
+
+    start = s.start if s.start is not None else 0
+    stop = s.stop if s.stop is not None else 0
+    return f"0x{start:x}:0x{stop:x}"
+
+
 def to_mem_val(element: str) -> slice | int:
     if ":" in element:
         start, end = element.split(":")
@@ -184,7 +193,7 @@ def main(
         "result": result,
         **{variable: inj.memory[variable] for variable in injector_variables},
         **{register: inj.regs[register] for register in injector_registers},
-        **{str(memory): inj.memory[memory] for memory in injector_memories},
+        **{format_memory_addr(memory): inj.memory[memory] for memory in injector_memories},
     }
     log.info(golden_run)
     inj.add_run(golden_run, True)
@@ -297,7 +306,7 @@ def main(
             "result": result,
             **{variable: inj.memory[variable] for variable in injector_variables},
             **{register: inj.regs[register] for register in injector_registers},
-            **{str(memory): inj.memory[memory] for memory in injector_memories},
+            **{format_memory_addr(memory): inj.memory[memory] for memory in injector_memories},
         }
         inj.add_run(run)
         log.info(str(run))
