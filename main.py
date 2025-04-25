@@ -18,7 +18,7 @@ from fit.stencil import Stencil
 log = logger.get()
 
 
-def format_memory_addr(s: slice[int, int, int] | int) -> str:
+def format_memory_addr(s: slice | int) -> str:
     if not isinstance(s, slice):
         return f"0x{s:x}"
 
