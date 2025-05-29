@@ -17,7 +17,7 @@ Currently supported embedded architectures:
 ## Quickstart
 
 ```bash
-$ cc -ggdb -O0 -o example example.c
+$ cc -ggdb -O0 -no-pie -o example example.c
 $ fit -c example_config.yml
 ```
 
