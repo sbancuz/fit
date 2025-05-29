@@ -269,7 +269,7 @@ class Memory:
             step = addr.step if addr.step is not None else self.word_size
 
         if isinstance(value, int):
-            self.__internal_injector.write_memory(start, [value], (end - start) // step)
+            self.__internal_injector.write_memory(start, [value], end - start)
         else:
             if isinstance(value, IntList):
                 value = list(value)
@@ -279,9 +279,9 @@ class Memory:
                     if val == 0:
                         continue
 
-                    self.__internal_injector.write_memory(true_addr, [val], 1)
+                    self.__internal_injector.write_memory(true_addr, [val], step)
             else:
-                self.__internal_injector.write_memory(start, value, 1)
+                self.__internal_injector.write_memory(start, value, len(value) * self.word_size)
 
     def mapping_ranges(self) -> list[range]:
         """

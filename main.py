@@ -1,4 +1,5 @@
 import csv
+import json
 import random
 from collections import Counter, defaultdict
 from datetime import timedelta
@@ -41,6 +42,51 @@ def to_mem_val(element: str) -> slice | int:
 """
 
 
+def format_memory_range(golden: str, run: str, format: bool = True) -> str:
+    golden = json.loads(golden)
+    run = json.loads(run)
+
+    gvals = [int(v) for v in golden]
+    rvals = [int(v) for v in run]
+
+    diff = [gold - r for gold, r in zip(gvals, rvals)]
+
+    res = hex(rvals[0])[2:]
+
+    count = -1
+    for i, v in enumerate(diff):
+        if v == 0:
+            if count == 0:
+                if format:
+                    res += "\033[0m..."
+                else:
+                    res += "..."
+            count += 1
+
+        else:
+            if count == -1:
+                count = 0
+
+                res = ""
+
+            if count > 0:
+                res += f"[{i}]..."
+                count = 0
+
+            if format:
+                res += "\033[31m"
+
+            res += hex(rvals[i])[2:]
+
+    if count == 1:
+        res = res[:-3]
+        res += hex(rvals[-1])[2:]
+    elif count > 1:
+        res += f"[{count - 1}]...{hex(rvals[-1])[2:]}"
+
+    return res + "\033[0m"
+
+
 def print_report(config: dict[str, Any]) -> None:
     exp_name = config["configuration"]["experiment_name"]
     golden_result_condition = config["configuration"]["golden_result_condition"]
@@ -72,12 +118,19 @@ def print_report(config: dict[str, Any]) -> None:
     for key in count_different_from_golden:
         print(f"{key}:")
         for i in count_different_from_golden[key].keys():
+            if key.startswith("0x"):
+                pr = format_memory_range(golden[key][0], i)
+            else:
+                pr = f"{i}"
+
             if i == golden[key][0]:
+                pr = pr.replace("\033[31m", "")
+                pr = pr.replace("\033[0m", "")
                 print(
-                    f"\033[33m\t{i}: {count_different_from_golden[key][i]} / {len(runs[key])}\033[0m"
+                    f"\033[33m\t{pr}: {count_different_from_golden[key][i]} / {len(runs[key])}\033[0m"
                 )
             else:
-                print(f"\t{i}: {count_different_from_golden[key][i]} / {len(runs[key])}")
+                print(f"\t{pr}: {count_different_from_golden[key][i]} / {len(runs[key])}")
 
 
 @click.command()
