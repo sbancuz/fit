@@ -32,8 +32,8 @@ class Stencil:
     def __init__(
         self,
         patterns: int | list[int],
-        offset_distribution: Distribution = Uniform(0, 1),
-        pattern_distribution: Distribution = Uniform(0, 1),
+        offset_distribution: Distribution = Uniform(0, 0),
+        pattern_distribution: Distribution = Uniform(0, 0),
         word_size: int = 4,
     ) -> None:
         self.offset_distribution = offset_distribution
@@ -63,9 +63,10 @@ class Stencil:
         val = pattern << self.offset_distribution.random()
 
         max_value = (1 << self.bits) - 1
-        max_number_of_chunks = (self.offset_distribution.length() - 1) // self.bits + (
-            self.pattern_size
+        offlen = (
+            self.offset_distribution.length() - 1 if self.offset_distribution.length() > 0 else 1
         )
+        max_number_of_chunks = (offlen) // self.bits + (self.pattern_size)
 
         res = [0 for _ in range(max_number_of_chunks)]
         for i in range(max_number_of_chunks):
