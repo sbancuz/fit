@@ -1,6 +1,6 @@
 import csv
 import random
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import timedelta
 from typing import Any, DefaultDict, Literal
 
@@ -36,14 +36,48 @@ def to_mem_val(element: str) -> slice | int:
         return int(element, 16)
 
 
+"""
+   contare occorrenze
+"""
+
+
 def print_report(config: dict[str, Any]) -> None:
     exp_name = config["configuration"]["experiment_name"]
+    golden_result_condition = config["configuration"]["golden_result_condition"]
+    result_conditions = config["configuration"]["result_condition"]
 
     ## Keep these in line
     runs = import_from_csv(exp_name + ".csv")
     golden = import_from_csv(exp_name + "_golden.csv")
-    print(golden)
-    print(runs)
+
+    count_different_from_golden = defaultdict(Counter)
+    for key in runs:
+        count_different_from_golden[key] = Counter(runs[key])
+
+    if "Timeout" not in count_different_from_golden["result"]:
+        count_different_from_golden["result"]["Timeout"] = 0
+
+    if golden_result_condition not in count_different_from_golden["result"]:
+        count_different_from_golden["result"][golden_result_condition] = 0
+
+    for condition in result_conditions:
+        if condition not in count_different_from_golden["result"]:
+            count_different_from_golden["result"][condition] = 0
+
+    for key in golden:
+        if key != "result":
+            if golden[key][0] not in count_different_from_golden[key]:
+                count_different_from_golden[key][golden[key][0]] = 0
+
+    for key in count_different_from_golden:
+        print(f"{key}:")
+        for i in count_different_from_golden[key].keys():
+            if i == golden[key][0]:
+                print(
+                    f"\033[33m\t{i}: {count_different_from_golden[key][i]} / {len(runs[key])}\033[0m"
+                )
+            else:
+                print(f"\t{i}: {count_different_from_golden[key][i]} / {len(runs[key])}")
 
 
 @click.command()
@@ -215,20 +249,20 @@ def main(
         else:
             injector_variables.append(element)
 
-    # log.info("Starting golden run")
-    # inj.reset()
-    # inj.set_result_condition(golden_result_condition)
+    log.info("Starting golden run")
+    inj.reset()
+    inj.set_result_condition(golden_result_condition)
 
-    # result = inj.run()
+    result = inj.run()
 
-    # golden_run = {
-    #     "result": result,
-    #     **{variable: inj.memory[variable] for variable in injector_variables},
-    #     **{register: inj.regs[register] for register in injector_registers},
-    #     **{format_memory_addr(memory): inj.memory[memory] for memory in injector_memories},
-    # }
-    # log.info(golden_run)
-    # inj.add_run(golden_run, True)
+    golden_run = {
+        "result": result,
+        **{variable: inj.memory[variable] for variable in injector_variables},
+        **{register: inj.regs[register] for register in injector_registers},
+        **{format_memory_addr(memory): inj.memory[memory] for memory in injector_memories},
+    }
+    log.info(golden_run)
+    inj.add_run(golden_run, True)
 
     log.info("Starting runs...")
     for h in log.handlers[:]:
