@@ -9,8 +9,8 @@ void win() { printf("End\n"); }
 
 int main() {
   while (1) {
-    sleep(5);
     i = 10;
+    sleep(5);
 
     if (i != 10)
       foo();

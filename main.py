@@ -9,6 +9,7 @@ import yaml
 from tqdm import tqdm
 
 from fit import logger
+from fit.csv import import_from_csv
 from fit.distribution import Fixed, Uniform
 from fit.fitlib import gdb_injector
 from fit.injector import Injector
@@ -35,11 +36,21 @@ def to_mem_val(element: str) -> slice | int:
         return int(element, 16)
 
 
+def print_report(config: dict[str, Any]) -> None:
+    exp_name = config["configuration"]["experiment_name"]
+
+    ## Keep these in line
+    runs = import_from_csv(exp_name + ".csv")
+    golden = import_from_csv(exp_name + "_golden.csv")
+    print(golden)
+    print(runs)
+
+
 @click.command()
 @click.option(
     "-c",
     "--config-file",
-    required=True,
+    required=False,
     type=click.Path(exists=True, resolve_path=True, dir_okay=False),
     help="The path to the .yml configuration",
 )
@@ -59,10 +70,17 @@ def to_mem_val(element: str) -> slice | int:
     ),
     show_default=True,
 )
+@click.option(
+    "--report",
+    flag_value=True,
+    default=False,
+    help="Report stats for an experiment, the runs are read from the config file",
+)
 def main(
     config_file: str,
     remote: str | None,
     log_level: Literal["info", "warning", "error", "debug"],
+    report: bool,
 ) -> None:
     """
     Main function that runs the injection process based on the configuration file and options provided.
@@ -77,28 +95,10 @@ def main(
     with open(config_file, "r") as yml_file:
         config = yaml.load(yml_file, Loader=yaml.FullLoader)
 
-    injector_data: DefaultDict[str, DefaultDict[str, dict[Any, Any]]] = defaultdict(
-        lambda: defaultdict(dict)
-    )
-
-    with open(config["injector"], mode="r", encoding="utf-8-sig") as file:
-        reader = csv.DictReader(file)
-
-        for row in reader:
-            where = row["where"]
-            operation = row["operation"]
-            entry = {
-                "value": int(row["value"]),
-                "value_probability": float(row["value_probability"]),
-            }
-
-            if "operation_probability" not in injector_data[where][operation]:
-                injector_data[where][operation]["operation_probability"] = float(
-                    row["operation_probability"]
-                )
-                injector_data[where][operation]["values"] = []
-
-            injector_data[where][operation]["values"].append(entry)
+    if config.get("configuration") is None:
+        log.critical(
+            "Configuration field not specified, please look at the example for a correct configuration file"
+        )
 
     if (executable := config["configuration"].get("executable")) is None:
         log.critical("Executable not set")
@@ -136,6 +136,11 @@ def main(
         log.critical("Experiment name not set")
         return
 
+    if report:
+        print_report(config)
+
+        return
+
     if config["configuration"]["gdb"] is not None:
         if (gdb_path := config["configuration"]["gdb"].get("gdb_path", None)) is None:
             log.critical("GDB path not set")
@@ -170,6 +175,33 @@ def main(
         log.critical("Please select a correct backend")
         return
 
+    if (injector := config.get("injector")) is None:
+        log.critical("Injector path is not specified")
+        return
+
+    injector_data: DefaultDict[str, DefaultDict[str, dict[Any, Any]]] = defaultdict(
+        lambda: defaultdict(dict)
+    )
+
+    with open(injector, mode="r", encoding="utf-8-sig") as file:
+        reader = csv.DictReader(file)
+
+        for row in reader:
+            where = row["where"]
+            operation = row["operation"]
+            entry = {
+                "value": int(row["value"]),
+                "value_probability": float(row["value_probability"]),
+            }
+
+            if "operation_probability" not in injector_data[where][operation]:
+                injector_data[where][operation]["operation_probability"] = float(
+                    row["operation_probability"]
+                )
+                injector_data[where][operation]["values"] = []
+
+            injector_data[where][operation]["values"].append(entry)
+
     injector_variables = []
     injector_registers = []
     injector_memories = []
@@ -183,20 +215,20 @@ def main(
         else:
             injector_variables.append(element)
 
-    log.info("Starting golden run")
-    inj.reset()
-    inj.set_result_condition(golden_result_condition)
+    # log.info("Starting golden run")
+    # inj.reset()
+    # inj.set_result_condition(golden_result_condition)
 
-    result = inj.run()
+    # result = inj.run()
 
-    golden_run = {
-        "result": result,
-        **{variable: inj.memory[variable] for variable in injector_variables},
-        **{register: inj.regs[register] for register in injector_registers},
-        **{format_memory_addr(memory): inj.memory[memory] for memory in injector_memories},
-    }
-    log.info(golden_run)
-    inj.add_run(golden_run, True)
+    # golden_run = {
+    #     "result": result,
+    #     **{variable: inj.memory[variable] for variable in injector_variables},
+    #     **{register: inj.regs[register] for register in injector_registers},
+    #     **{format_memory_addr(memory): inj.memory[memory] for memory in injector_memories},
+    # }
+    # log.info(golden_run)
+    # inj.add_run(golden_run, True)
 
     log.info("Starting runs...")
     for h in log.handlers[:]:
@@ -260,7 +292,12 @@ def main(
             )
 
             if where in injector_variables or to_mem_val(where) in injector_memories:
-                actual = to_mem_val(where)
+                if where not in injector_variables:
+                    assert not isinstance(where, str)
+                    actual = to_mem_val(where)
+                else:
+                    actual = where
+
                 if isinstance(actual, slice):
                     gen.offset_distribution = Uniform(
                         0, (actual.stop - actual.start) * 8, granularity=inj.binary.bits

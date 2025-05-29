@@ -302,12 +302,6 @@ class GDBInjector(InternalInjector):
         :return: the value read from the target.
         """
 
-        if count < self.word_size:
-            log.warning(
-                f"Reading less than {self.word_size} bytes, defaulting to {self.word_size} bytes"
-            )
-            count = self.word_size
-
         if not self.controller:
             log.critical("GDB controller not initialized")
         if self.is_running():
@@ -327,20 +321,25 @@ class GDBInjector(InternalInjector):
         if len(r["payload"]["memory"]) > 1:
             log.warning("Tried to read unreadable memory, filling the gaps with 0")
 
-        size = count // self.word_size
+        remainder = count % self.word_size
+        size = count // self.word_size + (1 if remainder > 0 else 0)
         size = size if size > 0 else self.word_size
         res = [0 for _ in range(size)]
         for chunk in r["payload"]["memory"]:
             off = int(chunk["offset"], 16)
-            end = int(chunk["end"], 16)
+            stop = int(chunk["end"], 16)
             begin = int(chunk["begin"], 16)
 
             val = chunk["contents"]
-            for i in range((end - begin) // (self.word_size)):
+            last = (stop - begin) // self.word_size
+            for i in range(last):
                 ## We do word_size * 2 since in text 2 chars are a byte
                 ini = i * self.word_size * 2
                 end = (i + 1) * self.word_size * 2
                 res[off + i] = get_int(val[ini:end], self.endianness)
+
+            if remainder > 0:
+                res[-1] = get_int(val[last : last + remainder], self.endianness)
 
         return res
 
@@ -357,8 +356,11 @@ class GDBInjector(InternalInjector):
         if self.is_running():
             log.critical("Cannot write memory while process is running")
 
+        print(
+            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, self.endianness)} {hex(repeat)[2:]}e"
+        )
         self.controller.write(
-            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, self.endianness)} {hex(repeat)}",
+            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, self.endianness)} {hex(repeat)[2:]}e",
             wait_for={
                 "message": "done",
                 "payload": None,

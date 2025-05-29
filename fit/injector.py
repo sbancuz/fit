@@ -284,7 +284,7 @@ class Injector:
 
         if self.golden != {}:
             export_to_csv(golden_path, self.golden)
-            log.info(f"Saving golden run to: {path}")
+            log.info(f"Saving golden run to: {golden_path}")
 
         if self.runs != {}:
             export_to_csv(path, self.runs)

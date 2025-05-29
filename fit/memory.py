@@ -62,7 +62,6 @@ class IntList(list[int]):
         :param other: the integer to XOR with.
         :return: the list of integers after performing the XOR operation.
         """
-
         return list([other ^ x for x in self])
 
     def __and__(self, other: Union[int, "IntList"]) -> list[int]:
@@ -180,7 +179,7 @@ class Memory:
                     offset = -int(off)
 
             start = self.elf.symbols[location].value + offset
-            step = self.word_size
+            step = self.elf.symbols[location].size
             end = start + step
         elif isinstance(addr, int):
             start = addr
@@ -198,7 +197,7 @@ class Memory:
         if step != self.word_size:
             res = IntList(
                 [
-                    self.__internal_injector.read_memory(true_addr, self.word_size)[0]
+                    self.__internal_injector.read_memory(true_addr, step)[0]
                     for true_addr in range(start, end, step)
                 ]
             )
@@ -206,6 +205,7 @@ class Memory:
             res = IntList(self.__internal_injector.read_memory(start, end - start))
 
         if len(res) == 1:
+            print(res)
             return res[0]
         else:
             return res
@@ -254,7 +254,7 @@ class Memory:
                     offset = -int(off)
 
             start = self.elf.symbols[location].value + offset
-            step = self.word_size
+            step = self.elf.symbols[location].size
             end = start + step
         elif isinstance(addr, int):
             start = addr
