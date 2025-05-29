@@ -389,7 +389,7 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">golden</span> <span class="o">!=</span> <span class="p">{}:</span>
             <span class="n">export_to_csv</span><span class="p">(</span><span class="n">golden_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">golden</span><span class="p">)</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving golden run to: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving golden run to: </span><span class="si">{</span><span class="n">golden_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">!=</span> <span class="p">{}:</span>
             <span class="n">export_to_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">)</span>
