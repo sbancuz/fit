@@ -6,6 +6,7 @@ from datetime import timedelta
 from typing import Any, DefaultDict, Literal
 
 import click
+import pandas as pd
 import yaml
 from tqdm import tqdm
 
@@ -88,6 +89,12 @@ def format_memory_range(golden: str, run: str, format: bool = True) -> str:
 
 
 def print_report(config: dict[str, Any]) -> None:
+    """
+    Function that prints a report of the experiment.
+
+    :param config: the configuration dictionary.
+    """
+
     exp_name = config["configuration"]["experiment_name"]
     golden_result_condition = config["configuration"]["golden_result_condition"]
     result_conditions = config["configuration"]["result_condition"]
@@ -115,6 +122,7 @@ def print_report(config: dict[str, Any]) -> None:
             if golden[key][0] not in count_different_from_golden[key]:
                 count_different_from_golden[key][golden[key][0]] = 0
 
+    print(f"Injection Result:")
     for key in count_different_from_golden:
         print(f"{key}:")
         for i in count_different_from_golden[key].keys():
@@ -127,10 +135,27 @@ def print_report(config: dict[str, Any]) -> None:
                 pr = pr.replace("\033[31m", "")
                 pr = pr.replace("\033[0m", "")
                 print(
-                    f"\033[33m\t{pr}: {count_different_from_golden[key][i]} / {len(runs[key])}\033[0m"
+                    f" - \033[33m{pr}: {count_different_from_golden[key][i]} / {len(runs[key])}\033[0m"
                 )
             else:
-                print(f"\t{pr}: {count_different_from_golden[key][i]} / {len(runs[key])}")
+                print(f" - {pr}: {count_different_from_golden[key][i]} / {len(runs[key])}")
+        print()
+
+    experiment_df = pd.read_csv(exp_name + ".csv")
+    experiment_df_filtered = experiment_df[
+        experiment_df["result"] != golden["result"][0]
+    ].drop_duplicates()
+
+    print(f"\n\nRuns that differ from golden:")
+    for i, row in experiment_df_filtered.iterrows():
+        print(" - ", end="")
+        for col in experiment_df_filtered.columns:
+            val = str(row[col])
+            if col != "result" and val != str(golden[col][0]):
+                print(f"\033[33m{val}\033[0m", end=" ")
+            else:
+                print(val, end=" ")
+        print()
 
 
 @click.command()
@@ -266,42 +291,23 @@ def main(
         log.critical("Injector path is not specified")
         return
 
-    injector_data: DefaultDict[str, DefaultDict[str, dict[Any, Any]]] = defaultdict(
-        lambda: defaultdict(dict)
-    )
+    # read the injector csv
+    injector_csv = pd.read_csv(injector)
 
-    with open(injector, mode="r", encoding="utf-8-sig") as file:
-        reader = csv.DictReader(file)
-
-        for row in reader:
-            where = row["where"]
-            operation = row["operation"]
-            entry = {
-                "value": int(row["value"]),
-                "value_probability": float(row["value_probability"]),
-            }
-
-            if "operation_probability" not in injector_data[where][operation]:
-                injector_data[where][operation]["operation_probability"] = float(
-                    row["operation_probability"]
-                )
-                injector_data[where][operation]["values"] = []
-
-            injector_data[where][operation]["values"].append(entry)
-
+    # divide the where data into variables, registers, and memory
     injector_variables = []
     injector_registers = []
     injector_memories = []
 
-    for element in injector_data.keys():
+    for element in injector_csv["where"].unique().tolist():
         if element in inj.regs.registers:
             injector_registers.append(element)
         elif element.startswith("0x"):
             injector_memories.append(to_mem_val(element))
-
         else:
             injector_variables.append(element)
 
+    # Start Golden Run
     log.info("Starting golden run")
     inj.reset()
     inj.set_result_condition(golden_result_condition)
@@ -317,6 +323,7 @@ def main(
     log.info(golden_run)
     inj.add_run(golden_run, True)
 
+    # Start Runs
     log.info("Starting runs...")
     for h in log.handlers[:]:
         log.removeHandler(h)
@@ -339,39 +346,31 @@ def main(
             :param inj: the injection.
             """
 
-            def choose_random_key(dictionary: dict[Any, Any]) -> Any:
-                """
-                Function that chooses a random key given a distribution.
+            # where, operation, operation_probability
+            where_operation_probability = list(
+                injector_csv[["where", "operation", "operation_probability"]]
+                .drop_duplicates()
+                .itertuples(index=False, name=None)
+            )
+            choices = [(w, op, p) for w, op, p in where_operation_probability]
+            weights = [p for w, op, p in where_operation_probability]
+            where_operation_selected = random.choices(choices, weights=weights, k=1)[0]
 
-                :param dictionary: the dictionary that contains the distribution.
-                :return: the interesting key.
-                """
-
-                return random.choices(list(dictionary.keys()), list(dictionary.values()))[0]
-
-            # Where, Operation - Operation_probability dictionary
-            combined_dict = {}
-            for where, operations in injector_data.items():
-                for operation, details in operations.items():
-                    key = (where, operation)
-                    combined_dict[key] = details["operation_probability"]
-
-            # Where - Operation dictionary
-            where_operation = choose_random_key(combined_dict)
+            selected_where_operation_probability_df = injector_csv[
+                (injector_csv["where"] == where_operation_selected[0])
+                & (injector_csv["operation"] == where_operation_selected[1])
+                & (injector_csv["operation_probability"] == where_operation_selected[2])
+            ]
 
             # Where to do injection
-            where = where_operation[0]
+            where = where_operation_selected[0]
             # Which operation executes to do injection
-            operation = where_operation[1]
-            # Which value use during injection
-            values = [
-                int(v["value"])
-                for v in injector_data[where_operation[0]][where_operation[1]]["values"]
-            ]
-            distribution = [
-                float(v["value_probability"])
-                for v in injector_data[where_operation[0]][where_operation[1]]["values"]
-            ]
+            operation = where_operation_selected[1]
+            # Which value uses during injection
+            values = selected_where_operation_probability_df["value"].tolist()
+            # Which distribution uses during injection
+            distribution = selected_where_operation_probability_df["value_probability"].tolist()
+
             gen = Stencil(
                 patterns=values,
                 pattern_distribution=Fixed(distribution),
