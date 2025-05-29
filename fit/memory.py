@@ -205,7 +205,6 @@ class Memory:
             res = IntList(self.__internal_injector.read_memory(start, end - start))
 
         if len(res) == 1:
-            print(res)
             return res[0]
         else:
             return res

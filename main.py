@@ -292,11 +292,9 @@ def main(
             )
 
             if where in injector_variables or to_mem_val(where) in injector_memories:
+                actual: slice | str | int = where
                 if where not in injector_variables:
-                    assert not isinstance(where, str)
                     actual = to_mem_val(where)
-                else:
-                    actual = where
 
                 if isinstance(actual, slice):
                     gen.offset_distribution = Uniform(

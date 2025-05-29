@@ -6,6 +6,13 @@ from fit.distribution import Distribution, Uniform
 from fit.memory import IntList
 
 
+def bits(val: int) -> int:
+    if val == 0:
+        return 1
+
+    return val.bit_length()
+
+
 class Stencil:
     """
     Class representing a stencil used for generating random patterns with specified distributions.
@@ -25,8 +32,8 @@ class Stencil:
     def __init__(
         self,
         patterns: int | list[int],
-        offset_distribution: Distribution = Uniform(0, 0),
-        pattern_distribution: Distribution = Uniform(0, 0),
+        offset_distribution: Distribution = Uniform(0, 1),
+        pattern_distribution: Distribution = Uniform(0, 1),
         word_size: int = 4,
     ) -> None:
         self.offset_distribution = offset_distribution
@@ -34,7 +41,10 @@ class Stencil:
         self.patterns = [patterns] if isinstance(patterns, int) else patterns
         self.bits = word_size * 8
         self.pattern_size = max(
-            [(pattern.bit_length() // self.bits) + 1 for pattern in self.patterns]
+            # Here we want to find the biggest pattern, we subtract one from
+            # bits(pattern) since if we have a pattern like 0xffffffff we would have
+            # a pattern that would be larger than needed
+            [((bits(pattern) - 1) // self.bits) + 1 for pattern in self.patterns]
         )
 
         assert len(self.patterns) > 0, "At least one pattern must be provided."
@@ -53,8 +63,8 @@ class Stencil:
         val = pattern << self.offset_distribution.random()
 
         max_value = (1 << self.bits) - 1
-        max_number_of_chunks = self.offset_distribution.length() // self.bits + (
-            self.pattern_size - 1
+        max_number_of_chunks = (self.offset_distribution.length() - 1) // self.bits + (
+            self.pattern_size
         )
 
         res = [0 for _ in range(max_number_of_chunks)]

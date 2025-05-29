@@ -356,9 +356,6 @@ class GDBInjector(InternalInjector):
         if self.is_running():
             log.critical("Cannot write memory while process is running")
 
-        print(
-            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, self.endianness)} {hex(repeat)[2:]}e"
-        )
         self.controller.write(
             f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, self.endianness)} {hex(repeat)[2:]}e",
             wait_for={
