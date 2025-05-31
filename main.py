@@ -52,6 +52,12 @@ def format_memory_range(golden: str, run: str, format: bool = True) -> str:
 
     diff = [gold - r for gold, r in zip(gvals, rvals)]
 
+    if len(diff) == 1:
+        if diff[0] != 0:
+            return "\033[31m" + hex(rvals[0])[2:] + "\033[0m..."
+        else:
+            return hex(rvals[0])[2:]
+
     res = hex(rvals[0])[2:]
 
     count = -1
