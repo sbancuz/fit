@@ -184,7 +184,9 @@ class Injector:
         """
 
         if injection_delay is None or inject_func is None:
-            return self.__internal_injector.run(blocking=True)
+            ev = self.__internal_injector.run(blocking=True)
+            self.events[ev].callback(self, **self.events[ev].kwargs)
+            return ev
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             event: str | None = None
@@ -194,11 +196,15 @@ class Injector:
             """
             if (event := self.__internal_injector.run(blocking=False)) != "unknown":
                 log.warning("Event triggered before injection")
+                self.events[event].callback(self, **self.events[event].kwargs)
+
                 return event
 
             time.sleep(injection_delay.total_seconds())
             if (event := self.__internal_injector.interrupt()) is not None:
                 log.warning("Event triggered before injection")
+                self.events[event].callback(self, **self.events[event].kwargs)
+
                 return event
 
             inject_func(self)
