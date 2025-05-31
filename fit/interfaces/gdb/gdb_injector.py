@@ -39,6 +39,8 @@ def parse_memory(
             res[off + i] = get_int(val[ini:end], endianness)
 
         if remainder > 0:
+            ## Convert to index like above
+            last = last * word_size * 2
             res[-1] = get_int(val[last : last + remainder * 2], endianness)
 
     return res
@@ -57,7 +59,7 @@ def get_int(s: str, byteorder: Literal["little", "big"]) -> int:
     return int.from_bytes(b, byteorder=byteorder)
 
 
-def to_gdb_hex(i: list[int], byteorder: Literal["little", "big"]) -> str:
+def to_gdb_hex(i: list[int], byteorder: Literal["little", "big"], word_size: int) -> str:
     """
     Function that converts an integer to hex string.
 
@@ -66,17 +68,13 @@ def to_gdb_hex(i: list[int], byteorder: Literal["little", "big"]) -> str:
     :return: the hex string representation of the integer value.
     """
 
-    byte_array = struct.pack("<" + "I" * len(i), *i)
+    bits = "I" if word_size == 4 else "Q"
+    endiannes = "<" if byteorder == "little" else ">"
 
-    # s = hex(i).replace("0x", "")
+    byte_array = struct.pack(endiannes + bits * len(i), *i)
 
-    # # Ensure even length (pairs of hex digits)
-    # if len(s) % 2 != 0:
-    #     s = "0" + s
-
-    # byte_array = bytes.fromhex(s)
-    if byteorder == "big":
-        byte_array = byte_array[::-1]
+    # if byteorder == "big":
+    #     byte_array = byte_array[::-1]
 
     return "".join(f"{b:02x}" for b in byte_array)
 
@@ -366,7 +364,7 @@ class GDBInjector(InternalInjector):
             log.critical("Cannot write memory while process is running")
 
         self.controller.write(
-            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, self.endianness)} {hex(repeat)[2:]}e",
+            f"-data-write-memory-bytes {hex(address)} {to_gdb_hex(value, self.endianness, self.word_size)} {hex(repeat)[2:]}e",
             wait_for={
                 "message": "done",
                 "payload": None,
