@@ -15,6 +15,35 @@ log = logger.get()
 GDB_FLAGS = ["-q", "--nx", "--interpreter=mi3"]
 
 
+def parse_memory(
+    memory: list[dict[str, Any]],
+    count: int,
+    word_size: int,
+    endianness: Literal["little", "big"],
+) -> list[int]:
+    remainder = count % word_size
+    size = count // word_size + (1 if remainder > 0 else 0)
+    size = size if size > 0 else word_size
+    res = [0 for _ in range(size)]
+    for chunk in memory:
+        off = int(chunk["offset"], 16)
+        stop = int(chunk["end"], 16)
+        begin = int(chunk["begin"], 16)
+
+        val = chunk["contents"]
+        last = (stop - begin) // word_size
+        for i in range(last):
+            ## We do word_size * 2 since in text 2 chars are a byte
+            ini = i * word_size * 2
+            end = (i + 1) * word_size * 2
+            res[off + i] = get_int(val[ini:end], endianness)
+
+        if remainder > 0:
+            res[-1] = get_int(val[last : last + remainder * 2], endianness)
+
+    return res
+
+
 def get_int(s: str, byteorder: Literal["little", "big"]) -> int:
     """
     Function that converts a hex string to an integer.
@@ -321,27 +350,7 @@ class GDBInjector(InternalInjector):
         if len(r["payload"]["memory"]) > 1:
             log.warning("Tried to read unreadable memory, filling the gaps with 0")
 
-        remainder = count % self.word_size
-        size = count // self.word_size + (1 if remainder > 0 else 0)
-        size = size if size > 0 else self.word_size
-        res = [0 for _ in range(size)]
-        for chunk in r["payload"]["memory"]:
-            off = int(chunk["offset"], 16)
-            stop = int(chunk["end"], 16)
-            begin = int(chunk["begin"], 16)
-
-            val = chunk["contents"]
-            last = (stop - begin) // self.word_size
-            for i in range(last):
-                ## We do word_size * 2 since in text 2 chars are a byte
-                ini = i * self.word_size * 2
-                end = (i + 1) * self.word_size * 2
-                res[off + i] = get_int(val[ini:end], self.endianness)
-
-            if remainder > 0:
-                res[-1] = get_int(val[last : last + remainder], self.endianness)
-
-        return res
+        return parse_memory(r["payload"]["memory"], count, self.word_size, self.endianness)
 
     def write_memory(self, address: int, value: list[int], repeat: int) -> None:
         """
