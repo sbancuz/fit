@@ -143,7 +143,6 @@ class GDBController:
             wait = wait_for
 
         while True:
-            print(stop_event)
             if stop_event and stop_event.is_set():
                 return []
 

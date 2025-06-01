@@ -22,6 +22,7 @@
 	      stlink
 
 	      poetry
+	      python312Packages.pandas
 
 	      gnumake
             ];
