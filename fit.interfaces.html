@@ -171,6 +171,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.get_int"><code class="docutils literal notranslate"><span class="pre">get_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.parse_memory"><code class="docutils literal notranslate"><span class="pre">parse_memory()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="fit.interfaces.gdb.html#fit.interfaces.gdb.gdb_injector.to_gdb_hex"><code class="docutils literal notranslate"><span class="pre">to_gdb_hex()</span></code></a></li>
 </ul>
 </li>
@@ -337,11 +338,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fit.interfaces.internal_injector.InternalInjector.run">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.run" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fit/interfaces/internal_injector.html#InternalInjector.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fit.interfaces.internal_injector.InternalInjector.run" title="Link to this definition"></a></dt>
 <dd><p>Function that runs the injector for a given amount of time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>blocking</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – whether to block until the precess stops.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>blocking</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – whether to block until the precess stops.</p></li>
+<li><p><strong>stop_event</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]</span>) – synchronization variable that needs to be checked when waiting for a timeout</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
