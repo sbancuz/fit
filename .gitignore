@@ -3,5 +3,6 @@ __pycache__
 .envrc
 build/
 docs/build/
+tests/out/
 
 foo
