@@ -1,4 +1,5 @@
 import concurrent.futures
+import threading
 import time
 from collections import defaultdict
 from datetime import timedelta
@@ -184,15 +185,19 @@ class Injector:
         """
 
         if injection_delay is None or inject_func is None:
-            ev = self.__internal_injector.run(blocking=True)
-            self.events[ev].callback(self, **self.events[ev].kwargs)
-            return ev
+            if timeout is None:
+                ev = self.__internal_injector.run(blocking=True)
+                self.events[ev].callback(self, **self.events[ev].kwargs)
+                return ev
+            else:
+                inject_func = lambda _: ...
+                injection_delay = timedelta(0)
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(2) as executor:
+            stop_event = threading.Event()
             event: str | None = None
             """
             This means that the event was triggered before the injection could take place.
-            TODO: Maybe we should return the event instead of 'unknown'? Should this be an error?
             """
             if (event := self.__internal_injector.run(blocking=False)) != "unknown":
                 log.warning("Event triggered before injection")
@@ -209,7 +214,11 @@ class Injector:
 
             inject_func(self)
 
-            proc = executor.submit(self.__internal_injector.run, blocking=True)
+            proc = executor.submit(
+                self.__internal_injector.run,
+                True,
+                stop_event,
+            )
 
             try:
                 if timeout is None:
@@ -217,6 +226,7 @@ class Injector:
                 else:
                     event = proc.result(timeout=timeout.total_seconds())
             except concurrent.futures.TimeoutError:
+                stop_event.set()
                 return "Timeout"
 
             self.events[event].callback(self, **self.events[event].kwargs)

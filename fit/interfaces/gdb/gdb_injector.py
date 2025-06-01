@@ -1,6 +1,7 @@
 import enum
 import re
 import struct
+import threading
 import time
 from typing import Any, Literal, cast
 
@@ -431,7 +432,7 @@ class GDBInjector(InternalInjector):
 
         self.controller.exit()
 
-    def run(self, blocking: bool = False) -> str:
+    def run(self, blocking: bool = False, stop_event: threading.Event | None = None) -> str:
         """
         Function that runs the injector for a given amount of time.
 
@@ -463,6 +464,9 @@ class GDBInjector(InternalInjector):
         )
 
         while self.state == self.State.RUNNING:
+            if stop_event and stop_event.is_set():
+                return "Timeout"
+
             for msg in bp:
                 if msg["message"] != "stopped":
                     continue
@@ -479,7 +483,9 @@ class GDBInjector(InternalInjector):
             if not blocking:
                 break
 
-            bp = self.controller.wait_response(wait_for=to_await, whole_response=True)
+            bp = self.controller.wait_response(
+                wait_for=to_await, whole_response=True, stop_event=stop_event
+            )
 
         self.state = self.State.EXIT
         return "unknown"

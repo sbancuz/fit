@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Self, Type
 
@@ -84,11 +85,14 @@ class InternalInjector(ABC):
         """
 
     @abstractmethod
-    def run(self: InternalInjector, blocking: bool = True) -> str:
+    def run(
+        self: InternalInjector, blocking: bool = True, stop_event: threading.Event | None = None
+    ) -> str:
         """
         Function that runs the injector for a given amount of time.
 
         :param blocking: whether to block until the precess stops.
+        :param stop_event: synchronization variable that needs to be checked when waiting for a timeout
         :return: the name of the breakpoint hit.
         """
 

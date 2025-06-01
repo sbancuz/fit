@@ -1,4 +1,5 @@
 import logging
+import threading
 from typing import Any
 
 from pygdbmi.gdbcontroller import GdbController
@@ -96,6 +97,7 @@ class GDBController:
         self,
         wait_for: list[dict[str, Any]] | dict[str, Any] | None = None,
         whole_response: bool = False,
+        stop_event: threading.Event | None = None,
     ) -> gdb_response:
         """
         Function that waits for a response from GDB that matches the specified criteria.
@@ -107,7 +109,7 @@ class GDBController:
 
         r: gdb_response = self.controller.get_gdb_response(raise_error_on_timeout=False)
         if wait_for is not None:
-            return self.await_response(r, wait_for, whole_response)
+            return self.await_response(r, wait_for, whole_response, stop_event)
 
         log.debug(f"<-- {r}")
         return r
@@ -124,6 +126,7 @@ class GDBController:
         request_response: gdb_response,
         wait_for: list[dict[str, Any]] | dict[str, Any],
         whole_response: bool = False,
+        stop_event: threading.Event | None = None,
     ) -> gdb_response:
         """
         Function that continuously poll responses from GDB until one matches the 'wait_for' condition.
@@ -140,6 +143,10 @@ class GDBController:
             wait = wait_for
 
         while True:
+            print(stop_event)
+            if stop_event and stop_event.is_set():
+                return []
+
             log.debug(f"<-- {request_response}")
 
             for msg in request_response:
