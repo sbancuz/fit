@@ -1,4 +1,5 @@
 import csv
+import sys
 from typing import Any
 
 
@@ -11,7 +12,7 @@ def import_from_csv(file_path: str) -> dict[str, Any]:
     :param file_path: the path to the CSV file to be imported.
     :return: the dictionary containing the CSV data, where each key is a column header and the value is a list of column entries.
     """
-
+    csv.field_size_limit(sys.maxsize)
     result: dict[str, list[Any]] = {}
     with open(file_path, mode="r", newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)

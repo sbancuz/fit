@@ -194,7 +194,7 @@ class Memory:
             end = addr.stop
             step = addr.step if addr.step is not None else self.word_size
 
-        if step != self.word_size:
+        if step < self.word_size:
             res = IntList(
                 [
                     self.__internal_injector.read_memory(true_addr, step)[0]
@@ -274,7 +274,7 @@ class Memory:
             if isinstance(value, IntList):
                 value = list(value)
 
-            if step != self.word_size:
+            if step < self.word_size:
                 for true_addr, val in zip(range(start, end, step), value):
                     if val == 0:
                         continue

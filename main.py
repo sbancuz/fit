@@ -13,6 +13,7 @@ from tqdm import tqdm
 from fit import logger
 from fit.csv import import_from_csv
 from fit.distribution import Fixed, Uniform
+from fit.elf import ELF
 from fit.fitlib import gdb_injector
 from fit.injector import Injector
 from fit.interfaces.implementations import Implementation
@@ -100,11 +101,11 @@ def print_report(config: dict[str, Any]) -> None:
 
     :param config: the configuration dictionary.
     """
-
     exp_name = config["configuration"]["experiment_name"]
     golden_result_condition = config["configuration"]["golden_result_condition"]
     result_conditions = config["configuration"]["result_condition"]
 
+    elf = ELF(config["configuration"]["executable"])
     ## Keep these in line
     runs = import_from_csv(exp_name + ".csv")
     golden = import_from_csv(exp_name + "_golden.csv")
@@ -132,7 +133,9 @@ def print_report(config: dict[str, Any]) -> None:
     for key in count_different_from_golden:
         print(f"{key}:")
         for i in count_different_from_golden[key].keys():
-            if key.startswith("0x"):
+            if key.startswith("0x") or (
+                elf.symbols[key] is not None and elf.symbols[key].size > elf.bits // 8
+            ):
                 pr = format_memory_range(golden[key][0], i)
             else:
                 pr = f"{i}"
@@ -317,8 +320,12 @@ def main(
     log.info("Starting golden run")
     inj.reset()
     inj.set_result_condition(golden_result_condition)
+    for condition in result_conditions:
+        inj.set_result_condition(condition)
 
     result = inj.run()
+    if result in result_conditions:
+        log.error(f"Golden run didn't reach end: got {result} expected: {golden_result_condition}")
 
     golden_run = {
         "result": result,
@@ -326,7 +333,7 @@ def main(
         **{register: inj.regs[register] for register in injector_registers},
         **{format_memory_addr(memory): inj.memory[memory] for memory in injector_memories},
     }
-    log.info(golden_run)
+    # log.info(golden_run)
     inj.add_run(golden_run, True)
 
     # Start Runs
@@ -388,6 +395,12 @@ def main(
                 if where not in injector_variables:
                     actual = to_mem_val(where)
 
+                if isinstance(actual, str):
+                    sym = inj.binary.symbols[where]
+                    gen.offset_distribution = Uniform(
+                        0, ((sym.value + sym.size) - sym.value) * 8, granularity=inj.binary.bits
+                    )
+
                 if isinstance(actual, slice):
                     gen.offset_distribution = Uniform(
                         0, (actual.stop - actual.start) * 8, granularity=inj.binary.bits
@@ -436,7 +449,7 @@ def main(
             **{format_memory_addr(memory): inj.memory[memory] for memory in injector_memories},
         }
         inj.add_run(run)
-        log.info(str(run))
+        # log.info(str(run))
 
     inj.save(experiment_name)
     inj.close()

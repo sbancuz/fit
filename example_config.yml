@@ -16,8 +16,8 @@ configuration:
 
   timeout: 60000
   injection_delay: #in ms
-    min: 5000
-    max: 10000
+    min: 1000
+    max: 3000
 
 
 injector: "example_csv.csv"
